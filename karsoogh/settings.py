@@ -15,6 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 def rel(x):
     return Path.joinpath(BASE_DIR, x)
 
@@ -30,7 +31,7 @@ def rel_media(x):
 SECRET_KEY = '3s%v6jaceszv$rabw)fj85+_alf^+v8ryanaf2qa&^n1)-3+x&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = False
@@ -80,7 +81,6 @@ CORS_ALLOW_HEADERS = [
 ]
 
 RESPONSE_TEMPLATE = '{{ "res_code": {}, "message": "{}", "data": {} }}'
-
 
 # Application definition
 
@@ -140,7 +140,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -159,7 +158,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -172,7 +170,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -195,12 +192,17 @@ GRADE_CHOICE = (
     (10, 'دهم'),
 )
 
+GENDER = (
+    ('MAN', 'مرد'),
+    ('WOMAN', 'زن'),
+)
+
 CONTENT_TYPE = (
     (1, 'متن'),
-    (2, 'ویدئو'),
+    (2, 'فیلم'),
     (3, 'عکس'),
     (4, 'بازی'),
-    (5, 'بازخورد'),
+    (5, 'پاسخ'),
 )
 
 SESSION_TIME = 1440

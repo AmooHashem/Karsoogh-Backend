@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.safestring import mark_safe
 
-from karsoogh.settings import GRADE_CHOICE, CONTENT_TYPE
+from karsoogh.settings import GRADE_CHOICE, CONTENT_TYPE, GENDER
 
 
 class BaseFieldsModel(models.Model):
@@ -42,6 +42,7 @@ class School(models.Model):
 class Student(BaseFieldsModel):
     national_code = models.CharField(max_length=11, verbose_name='کد ملی')
     password = models.CharField(max_length=255, verbose_name='کلمه عبور')
+    gender = models.CharField(choices=GENDER, max_length=10, verbose_name='جنسیت', null=True, blank=True)
     phone1 = models.CharField(max_length=11, verbose_name='تلفن همراه')
     phone2 = models.CharField(max_length=11, verbose_name='تلفن همراه دوم', null=True, blank=True)
     first_name = models.CharField(max_length=40, verbose_name='نام', null=True, blank=True)
