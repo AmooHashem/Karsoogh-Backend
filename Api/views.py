@@ -459,3 +459,21 @@ def answer(request):
         except Exception as d:
             return get_response(600)
     return get_response(601)
+
+
+@csrf_exempt
+def answershow(request, ans_id):
+    if request.method == "POST":
+        ans = Answer.objects.get(id=ans_id)
+        data = '{{"text": {}, "answer_text": {}, "answer_file": {}}}'.format(ans.question_content.question, ans.answer, ans.file)
+        return get_response(62, data)
+    return get_response(601)
+
+
+@csrf_exempt
+def set_score(request, ans_id, _score):
+    if request.method == "POST":
+        ans = Answer.objects.get(ans_id)
+        ans.score = _score
+        ans.save()
+    return get_response(601)

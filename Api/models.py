@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from django.utils.safestring import mark_safe
 
 from karsoogh.settings import GRADE_CHOICE, CONTENT_TYPE, GENDER
@@ -105,6 +106,7 @@ class Exam(BaseFieldsModel):
     holding_date = models.DateTimeField(verbose_name='تاریخ برگزاری', null=True, blank=True)
     ending_date = models.DateTimeField(verbose_name='تاریخ خاتمه', null=True, blank=True)
     status = models.IntegerField(verbose_name='وضعیت', default=0)
+    min_score = models.IntegerField()
 
     def __str__(self):
         return self.title
@@ -147,6 +149,21 @@ class Answer(BaseFieldsModel):
                                          related_name='answer_qc')
     student = models.ForeignKey('Student', on_delete=models.PROTECT, verbose_name='دانش آموز',
                                 related_name='answer_student')
+    score = models.IntegerField(verbose_name='نمره')
 
     def __str__(self):
         return '{} {}'.format(self.student.first_name, self.student.last_name)
+
+
+class ExamStudent(BaseFieldsModel):
+    exam = models.ForeignKey('Exam', on_delete=models.PROTECT, verbose_name='آزمون')
+    student = models.ForeignKey('Student', on_delete=models.PROTECT, verbose_name='دانش آموز')
+    # student_status = models.BooleanField(default=False, verbose_name='وضعیت دانش آموز')
+    can_register = models.BooleanField(default=False, verbose_name='مجاز به ثبت نام')
+    is_preregister = models.BooleanField(default=False, verbose_name='وضعیت پیش ثبت نام')
+    is_register_complete = models.BooleanField(default=False, verbose_name='وضعیت ثبت نام نهایی')
+    is_pass = models.BooleanField(default=False, verbose_name='قبولی در آزمون')
+    #score = (ExamStudent.objects)
+    # models.IntegerField(verbose_name='نمره')
+
+
