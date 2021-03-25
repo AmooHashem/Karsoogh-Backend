@@ -474,21 +474,26 @@ def answershow(request, ans_id):
 @csrf_exempt
 def set_score(request, ans_id, _score):
     if request.method == "POST":
-        ans = Answer.objects.get(ans_id)
+        ans = Answer.objects.get(id=ans_id)
         ans.score = _score
         ans.save()
+        return get_response(62)
     return get_response(601)
 
 
 @csrf_exempt
 def sum_score(request, exam_student_id):
     if request.method == "POST":
-        ans = 0
+        #ans = 0
+        print('salam1')
         exam_stu = ExamStudent.objects.get(id=exam_student_id)
-        Answer.objects.filter(student__id=exam_stu.student__id, question_content__question__exam_id__exact=exam_stu.exam__id).aggregate(ans = Sum('score'))
-        data = '{{ "sum_score" : "{}" }}'.format(ans)
-        return get_response(62, data)
+        print('salam12')
+        query = Answer.objects.filter(student=exam_stu.student, question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
+        print('salam123')
+        # data = '{{ "sum_score" : {} }}'.format(ans)
+        return get_response(62, query)
     return get_response(601)
+
 
 def is_pass(request, exam_student_id):
     if request.method == "POST":
