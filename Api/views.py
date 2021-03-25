@@ -485,24 +485,29 @@ def set_score(request, ans_id, _score):
 def sum_score(request, exam_student_id):
     if request.method == "POST":
         #ans = 0
-        print('salam1')
+        # print('salam1')
         exam_stu = ExamStudent.objects.get(id=exam_student_id)
-        print('salam12')
+        # print('salam12')
         query = Answer.objects.filter(student=exam_stu.student, question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
-        print('salam123')
+        # print('salam123')
         # data = '{{ "sum_score" : {} }}'.format(ans)
         return get_response(62, query)
     return get_response(601)
 
 
+@csrf_exempt
 def is_pass(request, exam_student_id):
     if request.method == "POST":
-        ans = sum_score(request, exam_student_id)
-        tmp = ExamStudent.objects.get(id=exam_student_id)
-        if ans >= tmp.exam.min_score:
+        exam_stu = ExamStudent.objects.get(id=exam_student_id)
+        query = Answer.objects.filter(student=exam_stu.student,
+                                      question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
+
+        if query['ans'] >= exam_stu.exam.min_score:
             datat = '{{ "pass": True }}'
+            exam_stu.is_pass = True
+            exam_stu.save()
             return get_response(62, datat)
-        # else:
-        #     dataf = '{{ "pass": True }}'
-        #     return get_response(data)
+        else:
+            dataf = '{{ "pass": False }}'
+            return get_response(62, dataf)
     return get_response(601)
