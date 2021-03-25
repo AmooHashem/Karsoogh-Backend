@@ -11,11 +11,12 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 import requests
+from django.db.models import Avg, Sum, Min, Max
 
 from Api.decorators import check_token
 from Api.forms import AnswerForm
 from Api.functions import get_response, get_expire_time, timestamp
-from Api.models import Payment, Student, PaymentResCode, Province, City, School, Question, QuestionContent, Answer
+from Api.models import Payment, Student, PaymentResCode, Province, City, School, Question, QuestionContent, Answer, ExamStudent
 from karsoogh.settings import API_TOKEN, SANDBOX
 
 
@@ -476,4 +477,27 @@ def set_score(request, ans_id, _score):
         ans = Answer.objects.get(ans_id)
         ans.score = _score
         ans.save()
+    return get_response(601)
+
+
+@csrf_exempt
+def sum_score(request, exam_student_id):
+    if request.method == "POST":
+        ans = 0
+        exam_stu = ExamStudent.objects.get(id=exam_student_id)
+        Answer.objects.filter(student__id=exam_stu.student__id, question_content__question__exam_id__exact=exam_stu.exam__id).aggregate(ans = Sum('score'))
+        data = '{{ "sum_score" : "{}" }}'.format(ans)
+        return get_response(62, data)
+    return get_response(601)
+
+def is_pass(request, exam_student_id):
+    if request.method == "POST":
+        ans = sum_score(request, exam_student_id)
+        tmp = ExamStudent.objects.get(id=exam_student_id)
+        if ans >= tmp.exam.min_score:
+            datat = '{{ "pass": True }}'
+            return get_response(62, datat)
+        # else:
+        #     dataf = '{{ "pass": True }}'
+        #     return get_response(data)
     return get_response(601)

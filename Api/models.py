@@ -106,7 +106,7 @@ class Exam(BaseFieldsModel):
     holding_date = models.DateTimeField(verbose_name='تاریخ برگزاری', null=True, blank=True)
     ending_date = models.DateTimeField(verbose_name='تاریخ خاتمه', null=True, blank=True)
     status = models.IntegerField(verbose_name='وضعیت', default=0)
-    min_score = models.IntegerField()
+    min_score = models.IntegerField(default=0, verbose_name='کمترین نمره')
 
     def __str__(self):
         return self.title
@@ -149,7 +149,7 @@ class Answer(BaseFieldsModel):
                                          related_name='answer_qc')
     student = models.ForeignKey('Student', on_delete=models.PROTECT, verbose_name='دانش آموز',
                                 related_name='answer_student')
-    score = models.IntegerField(verbose_name='نمره')
+    score = models.IntegerField(default=0, verbose_name='نمره')
 
     def __str__(self):
         return '{} {}'.format(self.student.first_name, self.student.last_name)
@@ -163,7 +163,3 @@ class ExamStudent(BaseFieldsModel):
     is_preregister = models.BooleanField(default=False, verbose_name='وضعیت پیش ثبت نام')
     is_register_complete = models.BooleanField(default=False, verbose_name='وضعیت ثبت نام نهایی')
     is_pass = models.BooleanField(default=False, verbose_name='قبولی در آزمون')
-    #score = (ExamStudent.objects)
-    # models.IntegerField(verbose_name='نمره')
-
-
