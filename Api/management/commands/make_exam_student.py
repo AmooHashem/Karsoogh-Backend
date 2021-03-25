@@ -15,5 +15,8 @@ class Command(BaseCommand):
                 ExamStudent.objects.create(
                     exam=exam,
                     student=student,
+                    can_register=True,
+                    is_preregister=True,
+                    is_register_complete=True,
                 )
                 print('ExamStudent created')
