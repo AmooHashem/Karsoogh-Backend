@@ -463,8 +463,9 @@ def answer(request):
 
 
 @csrf_exempt
-def answershow(request, ans_id):
+def answershow(request):
     if request.method == "POST":
+        ans_id = request.POST.get('ans_id')
         ans = Answer.objects.get(id=ans_id)
         data = '{{"text": {}, "answer_text": {}, "answer_file": {}}}'.format(ans.question_content.question, ans.answer, ans.file)
         return get_response(62, data)
@@ -472,21 +473,28 @@ def answershow(request, ans_id):
 
 
 @csrf_exempt
-def set_score(request, ans_id, _score):
+def set_score(request):
     if request.method == "POST":
-        ans = Answer.objects.get(id=ans_id)
-        ans.score = _score
-        ans.save()
+        ans_id = request.POST.get('ans_id')
+        print(ans_id)
+        _score = request.POST.get('score')
+        res = Answer.objects.get(id=ans_id)
+        res.score = _score
+        res.save()
         return get_response(62)
     return get_response(601)
 
 
 @csrf_exempt
-def sum_score(request, exam_student_id):
+@check_token
+def sum_score(request):
     if request.method == "POST":
+        exam_id = request.POST.get('exam_id')
+        student = request.student
+        exam_student = ExamStudent.objects.get(exam__id=exam_id, student=student)
         #ans = 0
         # print('salam1')
-        exam_stu = ExamStudent.objects.get(id=exam_student_id)
+        exam_stu = ExamStudent.objects.get(id=exam_student.id)
         # print('salam12')
         query = Answer.objects.filter(student=exam_stu.student, question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
         # print('salam123')
@@ -496,9 +504,15 @@ def sum_score(request, exam_student_id):
 
 
 @csrf_exempt
-def is_pass(request, exam_student_id):
+@check_token
+def is_pass(request):
+    # print('hello')
     if request.method == "POST":
-        exam_stu = ExamStudent.objects.get(id=exam_student_id)
+        # print('enterTheF')
+        exam_id = request.POST.get('exam_id')
+        student = request.student
+        exam_student = ExamStudent.objects.get(exam__id=exam_id, student=student)
+        exam_stu = ExamStudent.objects.get(id=exam_student.id)
         query = Answer.objects.filter(student=exam_stu.student,
                                       question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
 

@@ -32,8 +32,8 @@ urlpatterns = [
        path('exam/answer/', views.answer, name='answers'),
        path('exam/student/answer/<int:qc_id>/', views.get_student_content, name='get_student_content'),
        # sep added
-       path('answer/<int:ans_id>/', views.answershow, name='show answer'),
-       path('answer/set/<int:ans_id>/<int:_score>/', views.set_score, name='set score'),
-       path('examstudent/sum_score/<int:exam_student_id>/', views.sum_score, name='sum of scores'),
-       path('examstudent/is_pass/<int:exam_student_id>/', views.is_pass, name='check is pass'),
+       path('answer/show/', views.answershow, name='show answer'),
+       path('answer/set/', views.set_score, name='set score'),
+       path('examstudent/sum_score/', views.sum_score, name='sum of scores'),
+       path('examstudent/is_pass/', views.is_pass, name='check is pass'),
 ]
