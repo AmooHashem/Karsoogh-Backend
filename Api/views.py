@@ -11,11 +11,12 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 import requests
+from django.db.models import Avg, Sum, Min, Max
 
 from Api.decorators import check_token
 from Api.forms import AnswerForm
 from Api.functions import get_response, get_expire_time, timestamp
-from Api.models import Payment, Student, PaymentResCode, Province, City, School, Question, QuestionContent, Answer
+from Api.models import Payment, Student, PaymentResCode, Province, City, School, Question, QuestionContent, Answer, ExamStudent
 from karsoogh.settings import API_TOKEN, SANDBOX
 
 
@@ -458,4 +459,69 @@ def answer(request):
             return get_response(666)
         except Exception as d:
             return get_response(600)
+    return get_response(601)
+
+
+@csrf_exempt
+def answershow(request):
+    if request.method == "POST":
+        ans_id = request.POST.get('ans_id')
+        ans = Answer.objects.get(id=ans_id)
+        data = '{{"text": {}, "answer_text": {}, "answer_file": {}}}'.format(ans.question_content.question, ans.answer, ans.file)
+        return get_response(62, data)
+    return get_response(601)
+
+
+@csrf_exempt
+def set_score(request):
+    if request.method == "POST":
+        ans_id = request.POST.get('ans_id')
+        print(ans_id)
+        _score = request.POST.get('score')
+        res = Answer.objects.get(id=ans_id)
+        res.score = _score
+        res.save()
+        return get_response(62)
+    return get_response(601)
+
+
+@csrf_exempt
+@check_token
+def sum_score(request):
+    if request.method == "POST":
+        exam_id = request.POST.get('exam_id')
+        student = request.student
+        exam_student = ExamStudent.objects.get(exam__id=exam_id, student=student)
+        #ans = 0
+        # print('salam1')
+        exam_stu = ExamStudent.objects.get(id=exam_student.id)
+        # print('salam12')
+        query = Answer.objects.filter(student=exam_stu.student, question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
+        # print('salam123')
+        # data = '{{ "sum_score" : {} }}'.format(ans)
+        return get_response(62, query)
+    return get_response(601)
+
+
+@csrf_exempt
+@check_token
+def is_pass(request):
+    # print('hello')
+    if request.method == "POST":
+        # print('enterTheF')
+        exam_id = request.POST.get('exam_id')
+        student = request.student
+        exam_student = ExamStudent.objects.get(exam__id=exam_id, student=student)
+        exam_stu = ExamStudent.objects.get(id=exam_student.id)
+        query = Answer.objects.filter(student=exam_stu.student,
+                                      question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
+
+        if query['ans'] >= exam_stu.exam.min_score:
+            datat = '{{ "pass": True }}'
+            exam_stu.is_pass = True
+            exam_stu.save()
+            return get_response(62, datat)
+        else:
+            dataf = '{{ "pass": False }}'
+            return get_response(62, dataf)
     return get_response(601)
