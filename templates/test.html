@@ -1,0 +1,76 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        $.ajax({
+            url: 'https://backend.interkarsolar.ir/pay/request/',
+            type: "POST",
+            data: {
+                "amount": 1000,
+                "return_link": "https://backend.interkarsolar.ir/test",
+            },
+            headers: {
+                "token": "cca1f0c2b103423f8009881a7410480f",
+              "accept": "application/json"
+            },
+            success: function (e) {
+                alert(e);
+            },
+            error: function (e) {
+                alert(e);
+            }
+         });
+
+
+        {#$.ajax({#}
+        {#    url: 'https://backend.interkarsolar.ir/student/login/',#}
+        {#    //url: 'http://127.0.0.1:8000/student/register/',#}
+        {##}
+        {#    type: "POST",#}
+        {##}
+        {#    data: {#}
+        {#        "national_code": "1258118521",#}
+        {#        "password": "123",#}
+        {#    },#}
+        {#    headers: {#}
+        {#      "accept": "application/json",#}
+        {#        "Access-Control-Allow-Origin":"*"#}
+        {#    },#}
+        {#    success: function (e) {#}
+        {#        alert(e);#}
+        {#    },#}
+        {#    error: function (e) {#}
+        {#        alert(e);#}
+        {#    }#}
+        {# });#}
+
+
+        {#$.ajax({#}
+        {#    url: 'https://backend.interkarsolar.ir/student/register/',#}
+        {#    //url: 'http://127.0.0.1:8000/student/register/',#}
+        {##}
+        {#    type: "POST",#}
+        {##}
+        {#    data: {#}
+        {#        "national_code": "1258118521",#}
+        {#        "password": "123",#}
+        {#        "phone1": "09132227777"#}
+        {#    },#}
+        {#    headers: {#}
+        {#      "accept": "application/json",#}
+        {#        "Access-Control-Allow-Origin":"https://backend.interkarsolar.ir"#}
+        {#    },#}
+        {#    success: function (e) {#}
+        {#        alert(e);#}
+        {#    },#}
+        {#    error: function (e) {#}
+        {#        alert(e);#}
+        {#    }#}
+        {# });#}
+    </script>
+</body>
+</html>
