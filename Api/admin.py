@@ -26,7 +26,7 @@ class AnswerAdmin(admin.ModelAdmin):
         from django.http import HttpResponse
         file = open('answer.csv', 'w')
         writer = csv.writer(file)
-        writer.writerow(['id', 'question_content_id'])
+        writer.writerow(['id', 'qc_id'])
         for i in queryset:
             writer.writerow([i.id, i.question_content.id])
 
@@ -34,10 +34,10 @@ class AnswerAdmin(admin.ModelAdmin):
 
         f = open('answer.csv', 'r')
         response = HttpResponse(f, content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=stat-info.csv'
+        response['Content-Disposition'] = 'attachment; filename=answer.csv'
         return response
 
-    list_display = ('id', 'question_content_id')
+    list_display = ('id', 'question_content_id', 'student')
     actions = [csv_download]
 
 

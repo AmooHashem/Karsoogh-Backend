@@ -19,11 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a24f7e4-373a-4b2e-90b2-48eac7e67a2a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/djangoTestLast.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+    <list default="true" id="7a24f7e4-373a-4b2e-90b2-48eac7e67a2a" name="Default Changelist" comment="add csv download action to admin panel">
       <change afterPath="$PROJECT_DIR$/answer.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/media/vigiatonet2.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -35,6 +31,9 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -53,7 +52,7 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
-  <component name="JupyterTrust" id="a0b487ff-f7dc-4180-a83d-cb74a71c89ff" />
+  <component name="JupyterTrust" id="9a3ccac9-616b-4416-a4be-d56552543b68" />
   <component name="ProjectId" id="1ptlPz55YW3fA5it0Elta1ePjkn" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -131,7 +130,8 @@
       <option name="presentableId" value="Default" />
       <updated>1616010247593</updated>
       <workItem from="1617013992573" duration="74000" />
-      <workItem from="1617014402599" duration="4479000" />
+      <workItem from="1617014402599" duration="5275000" />
+      <workItem from="1617020763494" duration="2526000" />
     </task>
     <task id="LOCAL-00001" summary="add gender field to student">
       <created>1616193131331</created>
@@ -147,7 +147,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616264895319</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="add csv download action to admin panel">
+      <created>1617019214237</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1617019214237</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -173,12 +180,17 @@
     <MESSAGE value="add gender field to student" />
     <MESSAGE value="add make_migration log :?" />
     <MESSAGE value="merge" />
-    <option name="LAST_COMMIT_MESSAGE" value="merge" />
+    <MESSAGE value="add csv download action to admin panel" />
+    <option name="LAST_COMMIT_MESSAGE" value="add csv download action to admin panel" />
   </component>
   <component name="WindowStateProjectService">
     <state x="401" y="135" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1617014060402">
       <screen x="0" y="0" width="1280" height="689" />
     </state>
     <state x="401" y="135" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.689@0.0.1280.689" timestamp="1617014060402" />
+    <state x="233" y="59" key="Vcs.Push.Dialog.v2" timestamp="1617019218471">
+      <screen x="0" y="0" width="1280" height="689" />
+    </state>
+    <state x="233" y="59" key="Vcs.Push.Dialog.v2/0.0.1280.689@0.0.1280.689" timestamp="1617019218471" />
   </component>
 </project>
