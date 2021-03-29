@@ -150,6 +150,7 @@ class Answer(BaseFieldsModel):
     student = models.ForeignKey('Student', on_delete=models.PROTECT, verbose_name='دانش آموز',
                                 related_name='answer_student')
     score = models.IntegerField(default=0, verbose_name='نمره')
+    comment = models.TextField(verbose_name='نظر مصحح', blank=True, null=True)
 
     def __str__(self):
         return '{} {}'.format(self.student.first_name, self.student.last_name)

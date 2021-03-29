@@ -471,8 +471,8 @@ def show_answer(request):
     if request.method == "POST":
         ans_id = request.POST.get('ans_id')
         ans = get_object_or_404(Answer, id=ans_id)
-        data = '{{"text": "{}", "answer_text": "{}", "answer_file": "{}"}}'.format(ans.question_content.question, ans.answer,
-                                                                             ans.file)
+        data = '{{"text": "{}", "answer_text": "{}", "answer_file": "{}", "comment": "{}"}}' \
+            .format(ans.question_content.question, ans.answer, ans.file, ans.comment)
         return get_response(62, data)
     return get_response(601)
 
@@ -481,11 +481,13 @@ def show_answer(request):
 def set_score(request):
     if request.method == "POST":
         ans_id = request.POST.get('ans_id')
-        print(ans_id)
         score = request.POST.get('score')
-        res = get_object_or_404(Answer, id=ans_id)
-        res.score = score
-        res.save()
+        comment = request.POST.get('comment')
+        student_answer = get_object_or_404(Answer, id=ans_id)
+        if score is not None:
+            student_answer.score = score
+        student_answer.comment = comment
+        student_answer.save()
         return get_response(62)
     return get_response(601)
 
