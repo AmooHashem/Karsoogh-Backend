@@ -32,7 +32,7 @@ urlpatterns = [
        path('exam/answer/', views.answer, name='answers'),
        path('exam/student/answer/<int:qc_id>/', views.get_student_content, name='get_student_content'),
        # sep added
-       path('answer/show/', views.answershow, name='show answer'),
+       path('answer/show/', views.show_answer, name='show answer'),
        path('answer/set/', views.set_score, name='set score'),
        path('examstudent/sum_score/', views.sum_score, name='sum of scores'),
        path('examstudent/is_pass/', views.is_pass, name='check is pass'),
