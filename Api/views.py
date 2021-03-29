@@ -2,7 +2,10 @@ import json
 import uuid
 from datetime import datetime, timedelta
 import random
+import logging
 
+logger = logging.getLogger(__name__)
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
 from django.core import serializers
 from django.db import transaction
@@ -16,7 +19,8 @@ from django.db.models import Avg, Sum, Min, Max
 from Api.decorators import check_token
 from Api.forms import AnswerForm
 from Api.functions import get_response, get_expire_time, timestamp
-from Api.models import Payment, Student, PaymentResCode, Province, City, School, Question, QuestionContent, Answer, ExamStudent
+from Api.models import Payment, Student, PaymentResCode, Province, City, School, Question, QuestionContent, Answer, \
+    ExamStudent
 from karsoogh.settings import API_TOKEN, SANDBOX
 
 
@@ -313,7 +317,7 @@ def students(request):
     if request.method == "GET":
         if request.GET.get('keygen') == 'c89fpg20xtg92c5110322':
             data = list(Student.objects.all().values(
-                'id','national_code', 'phone1', 'phone2', 'first_name', 'last_name',
+                'id', 'national_code', 'phone1', 'phone2', 'first_name', 'last_name',
                 'grade', 'school_name', 'school_phone', 'manager_name', 'manager_phone',
                 'status', 'city', 'city__province'))
             return get_response(62, serializers.serialize('json', data))
@@ -398,10 +402,10 @@ def get_content(request, question_id):
     if request.method == "POST":
         try:
             q = Question.objects.filter(pk=question_id).first()
-            qc = q.qc_question.filter(status=1, content__status=1)\
+            qc = q.qc_question.filter(status=1, content__status=1) \
                 .annotate(qc_id=F('pk'), type=F('content__content_type'), title=F('content__title'),
                           content_desc=F('content__content')).order_by('ordering')
-            data = '{{ "title": "{}", "description": "{}", "contents": {} }}'\
+            data = '{{ "title": "{}", "description": "{}", "contents": {} }}' \
                 .format(q.title, q.description, json.dumps(list(qc.values('qc_id', 'type', 'title', 'content_desc'))))
             return get_response(62, data)
         except Exception as d:
@@ -466,8 +470,9 @@ def answer(request):
 def answershow(request):
     if request.method == "POST":
         ans_id = request.POST.get('ans_id')
-        ans = Answer.objects.get(id=ans_id)
-        data = '{{"text": {}, "answer_text": {}, "answer_file": {}}}'.format(ans.question_content.question, ans.answer, ans.file)
+        ans = get_object_or_404(Answer, id=ans_id)
+        data = '{{"text": {}, "answer_text": {}, "answer_file": {}}}'.format(ans.question_content.question, ans.answer,
+                                                                             ans.file)
         return get_response(62, data)
     return get_response(601)
 
@@ -492,11 +497,12 @@ def sum_score(request):
         exam_id = request.POST.get('exam_id')
         student = request.student
         exam_student = ExamStudent.objects.get(exam__id=exam_id, student=student)
-        #ans = 0
+        # ans = 0
         # print('salam1')
         exam_stu = ExamStudent.objects.get(id=exam_student.id)
         # print('salam12')
-        query = Answer.objects.filter(student=exam_stu.student, question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
+        query = Answer.objects.filter(student=exam_stu.student,
+                                      question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
         # print('salam123')
         # data = '{{ "sum_score" : {} }}'.format(ans)
         return get_response(62, query)
