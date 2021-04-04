@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Sum
 from django.utils.safestring import mark_safe
 
-from karsoogh.settings import GRADE_CHOICE, CONTENT_TYPE, GENDER
+from karsoogh.settings import GRADE, CONTENT_TYPE, GENDER
 
 
 class BaseFieldsModel(models.Model):
@@ -48,7 +48,7 @@ class Student(BaseFieldsModel):
     phone2 = models.CharField(max_length=11, verbose_name='تلفن همراه دوم', null=True, blank=True)
     first_name = models.CharField(max_length=40, verbose_name='نام', null=True, blank=True)
     last_name = models.CharField(max_length=40, verbose_name='نام خانوادگی', null=True, blank=True)
-    grade = models.IntegerField(choices=GRADE_CHOICE, verbose_name='پایه تحصیلی', null=True, blank=True)
+    grade = models.IntegerField(choices=GRADE, verbose_name='پایه تحصیلی', null=True, blank=True)
     school_name = models.CharField(max_length=255, verbose_name='نام مدرسه', null=True, blank=True)
     school_phone = models.CharField(max_length=40, verbose_name='شماره تلفن مدرسه', null=True, blank=True)
     manager_name = models.CharField(max_length=40, verbose_name='نام مدیر مدرسه', null=True, blank=True)
