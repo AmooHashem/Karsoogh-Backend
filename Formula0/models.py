@@ -24,9 +24,9 @@ class Student(BaseFieldsModel):
 
 class Team(BaseFieldsModel):
     id = models.CharField(verbose_name='شناسه', max_length=100, primary_key=True)
-    voice_chat_link = models.CharField(verbose_name='لینک چت صوتی', max_length=255, null=True)
-    name = models.CharField(max_length=40, verbose_name='نام')
-    grade = models.IntegerField(choices=GRADE, null=True)
+    voice_chat_link = models.CharField(verbose_name='لینک چت صوتی', max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=40, verbose_name='نام', null=True, blank=True)
+    grade = models.IntegerField(choices=GRADE, null=True, blank=True)
     student1 = models.ForeignKey('Student', on_delete=models.PROTECT, verbose_name='نفر اول',
                                  related_name='first_member')
     student2 = models.ForeignKey('Student', on_delete=models.PROTECT, verbose_name='نفر دوم',
@@ -36,36 +36,32 @@ class Team(BaseFieldsModel):
     score = models.IntegerField(verbose_name='امتیاز', default=0)
 
     def __str__(self):
-        return '{} | {} | {}'.format(self.student1.name, self.student2.name, self.student3.name)
+        return '{}: {} | {} | {}'.format(self.name, self.student1.name, self.student2.name, self.student3.name)
 
 
 class Problem(BaseFieldsModel):
+    name = models.CharField(verbose_name='نام', null=True, max_length=40)
     text = models.TextField(verbose_name='متن')
     subject = models.IntegerField(choices=PROBLEM_SUBJECTS, verbose_name='موضوع', null=True)
 
     def __str__(self):
-        return PROBLEM_SUBJECTS[self.subject][1]
+        return '{} | {}'.format(self.name, PROBLEM_SUBJECTS[self.subject][1])
 
 
 class ProblemTeam(BaseFieldsModel):
     problem = models.ForeignKey('Problem', on_delete=models.PROTECT, verbose_name='مسئله')
     team = models.ForeignKey('Team', on_delete=models.PROTECT, verbose_name='تیم')
     score = models.IntegerField(verbose_name='نمره', default=0)
-    status = models.IntegerField(choices=PROBLEM_STATUS, verbose_name='وضعیت', default=0)
-    answer = models.TextField(verbose_name='پاسخ', null=True)
+    auction_cost = models.IntegerField(verbose_name='هزینه در مزایده', default=0)
+    status = models.IntegerField(choices=PROBLEM_STATUS, verbose_name='وضعیت', default=1)
+    answer = models.TextField(verbose_name='پاسخ', blank=True, null=True)
+
+    def __str__(self):
+        return '{} | {}'.format(self.team.name, self.problem.name)
 
 
 class Game(BaseFieldsModel):
     mode = models.CharField(choices=GAME_MODE, verbose_name='حالت', max_length=40)
-
-
-class PaymentResCode(models.Model):
-    id = models.IntegerField(primary_key=True, unique=True, verbose_name='کد')
-    desc = models.CharField(max_length=255, verbose_name='شرح کد')
-    status = models.IntegerField(verbose_name='وضعیت', null=True, blank=True)
-
-    def __str__(self):
-        return self.desc
 
 # class Question(BaseFieldsModel):
 #     title = models.CharField(max_length=255, verbose_name='عنوان سوال')
