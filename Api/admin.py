@@ -70,7 +70,8 @@ class ExamAdmin(admin.ModelAdmin):
             first_row.append(exam.title)
         writer.writerow(first_row)
         for student in students:
-            print(student.city)
+            if not student.city or not student.grade:  # todo: fix in a better way! (for example, have a is_valid function)
+                continue
             row = [student.national_code, student.first_name, student.last_name, student.grade, student.school_name,
                    student.city.title, student.city.province.title]
             for exam in queryset:
