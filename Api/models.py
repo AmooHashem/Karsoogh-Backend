@@ -62,7 +62,7 @@ class Student(BaseFieldsModel):
                              related_name='student_city', null=True, blank=True)
 
     def __str__(self):
-        return '{}|{} {}'.format(self.national_code, self.first_name, self.last_name)
+        return '{} {}'.format(self.first_name, self.last_name)
 
 
 class Payment(BaseFieldsModel):
@@ -102,7 +102,7 @@ class PaymentResCode(models.Model):
 
 
 class Exam(BaseFieldsModel):
-    title = models.CharField(max_length=255, verbose_name='عنوان آزمون')
+    title = models.CharField(max_length=255, verbose_name='عنوان')
     holding_date = models.DateTimeField(verbose_name='تاریخ برگزاری', null=True, blank=True)
     ending_date = models.DateTimeField(verbose_name='تاریخ خاتمه', null=True, blank=True)
     status = models.IntegerField(verbose_name='وضعیت', default=0)
@@ -113,7 +113,7 @@ class Exam(BaseFieldsModel):
 
 
 class Question(BaseFieldsModel):
-    title = models.CharField(max_length=255, verbose_name='عنوان سوال')
+    title = models.CharField(max_length=255, verbose_name='عنوان')
     description = models.TextField(verbose_name='توضیحات', null=True, blank=True)
     status = models.IntegerField(verbose_name='وضعیت', default=0)
     exam = models.ForeignKey('Exam', on_delete=models.PROTECT, verbose_name='آزمون', related_name='question_exam')
@@ -153,14 +153,20 @@ class Answer(BaseFieldsModel):
     comment = models.TextField(verbose_name='نظر مصحح', blank=True, null=True)
 
     def __str__(self):
-        return '{} {}'.format(self.student.first_name, self.student.last_name)
+        return '{} | {} {}'.format(self.question_content.question.title,
+                                   self.student.first_name, self.student.last_name)
 
 
 class ExamStudent(BaseFieldsModel):
     exam = models.ForeignKey('Exam', on_delete=models.PROTECT, verbose_name='آزمون')
     student = models.ForeignKey('Student', on_delete=models.PROTECT, verbose_name='دانش آموز')
+    score = models.IntegerField(default=0, null=True, blank=True, verbose_name='نمره')
+
     # student_status = models.BooleanField(default=False, verbose_name='وضعیت دانش آموز')
-    can_register = models.BooleanField(default=False, verbose_name='مجاز به ثبت نام')
-    is_preregister = models.BooleanField(default=False, verbose_name='وضعیت پیش ثبت نام')
-    is_register_complete = models.BooleanField(default=False, verbose_name='وضعیت ثبت نام نهایی')
-    is_pass = models.BooleanField(default=False, verbose_name='قبولی در آزمون')
+    # can_register = models.BooleanField(default=False, verbose_name='مجاز به ثبت نام')
+    # is_preregister = models.BooleanField(default=False, verbose_name='وضعیت پیش ثبت نام')
+    # is_register_complete = models.BooleanField(default=False, verbose_name='وضعیت ثبت نام نهایی')
+    # is_pass = models.BooleanField(default=False, verbose_name='قبولی در آزمون')
+
+    def __str__(self):
+        return '{} | {}'.format(self.exam.title, self.student)

@@ -1,7 +1,9 @@
+from django.http import HttpResponse
 from django.contrib import admin
+from Api.models import *
+import csv
 
 # Register your models here.
-from Api.models import *
 
 admin.site.register(Student)
 admin.site.register(Payment)
@@ -9,27 +11,20 @@ admin.site.register(PaymentResCode)
 admin.site.register(School)
 admin.site.register(Province)
 admin.site.register(City)
-admin.site.register(Exam)
 admin.site.register(Question)
 admin.site.register(Content)
 admin.site.register(QuestionContent)
+admin.site.register(ExamStudent)
 
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
-
-    # def get_qc_id(self, obj):
-    #     return obj.question_content.id
-
-    def csv_download(self, request, queryset):
-        import csv
-        from django.http import HttpResponse
+    def download_csv(self, request, queryset):
         file = open('answer.csv', 'w')
         writer = csv.writer(file)
         writer.writerow(['id', 'qc_id'])
-        for i in queryset:
-            writer.writerow([i.id, i.question_content.id])
-
+        for answer in queryset:
+            writer.writerow([answer.id, answer.question_content.id])
         file.close()
 
         f = open('answer.csv', 'r')
@@ -38,7 +33,57 @@ class AnswerAdmin(admin.ModelAdmin):
         return response
 
     list_display = ('id', 'question_content_id', 'student')
-    actions = [csv_download]
+    download_csv.short_description = 'Export Selected as csv'
+    actions = [download_csv]
 
 
-admin.site.register(ExamStudent)
+@admin.register(Exam)
+class ExamAdmin(admin.ModelAdmin):
+    def sum_scores(self, request, queryset):
+        answers = list(Answer.objects.all())
+        students = list(Student.objects.all())
+        for selected_exam in queryset:
+            for student in students:
+                exam_student = ExamStudent.objects.filter(exam=selected_exam, student=student)
+                if len(exam_student) == 0:
+                    ExamStudent.objects.create(exam=selected_exam, student=student)
+                else:
+                    exam_student[0].score = 0
+                    exam_student[0].save()
+
+            for answer in answers:
+                answer_exam = answer.question_content.question.exam
+                if selected_exam != answer_exam:
+                    continue
+                student = answer.student
+                exam_student = ExamStudent.objects.get(exam=selected_exam, student=student)
+                print(answer.score)
+                exam_student.score = exam_student.score + answer.score
+                exam_student.save()
+
+    def get_student_info_csv(self, request, queryset):
+        file = open('answer.csv', 'w')
+        writer = csv.writer(file)
+        students = list(Student.objects.all())
+        first_row = ['کد ملی', 'نام', 'نام خانوادگی', 'پایه', 'مدرسه', 'شهر', 'استان']
+        for exam in queryset:
+            first_row.append(exam.title)
+        writer.writerow(first_row)
+        for student in students:
+            print(student.city)
+            row = [student.national_code, student.first_name, student.last_name, student.grade, student.school_name,
+                   student.city.title, student.city.province.title]
+            for exam in queryset:
+                exam_student = ExamStudent.objects.get(exam=exam, student=student)
+                row.append(exam_student.score)
+            writer.writerow(row)
+        file.close()
+
+        f = open('answer.csv', 'r')
+        response = HttpResponse(f, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=answer.csv'
+        return response
+
+    sum_scores.short_description = 'Sum Scores of Selected Exams'
+    get_student_info_csv.short_description = 'Get Students Score in Selected Exams'
+    actions = [sum_scores, get_student_info_csv]

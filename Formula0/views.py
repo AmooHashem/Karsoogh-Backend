@@ -37,6 +37,7 @@ def login(request):
 def get_team_data(request):
     if request.method == "POST":
         team_id = request.POST.get('team_id')
+        print(team_id)
         team = get_object_or_404(Team, id=team_id)
         return get_response('اطلاعات تیم با موفقیت دریافت شد!',
                             '{{"name": "{}", "score": "{}", "grade": "{}"}}'.format(team.name, team.score, team.grade))
@@ -56,6 +57,7 @@ def get_problems(request):
                 'status': problem_team.status,
                 'name': problem_team.problem.name,
                 'score': problem_team.score,
+                'subject': problem_team.problem.subject,
             })
         return get_response("سوالات با موفقیت دریافت شد!", format(json.dumps(result)))
     return get_response('این متد غیرمجاز است!', None, 405)
@@ -74,6 +76,7 @@ def get_auction_problems(request):
                 'name': problem_team.problem.name,
                 'score': problem_team.score,
                 'auction_cost': problem_team.auction_cost,
+                'subject': problem_team.problem.subject,
             })
         return get_response("سوالات مزایده با موفقیت دریافت شد!", format(json.dumps(result)))
     return get_response('این متد غیرمجاز است!', None, 405)
@@ -83,7 +86,7 @@ def get_auction_problems(request):
 def request_problem(request):
     if request.method == "POST":
         team_id = request.POST.get('team_id')
-        subject = request.POST.get('subject')
+        subject = int(request.POST.get('subject'))
 
         if len(ProblemTeam.objects.filter(team__id=team_id, status=1)) >= 3:
             return get_response("نمی‌توانید هم‌زمان بیش از ۳ سوال داشته باشید!", {}, 400)
