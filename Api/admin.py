@@ -80,9 +80,9 @@ class ExamAdmin(admin.ModelAdmin):
             writer.writerow(row)
         file.close()
 
-        f = open('answer.csv', 'r')
+        f = open('result.csv', 'r')
         response = HttpResponse(f, content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=answer.csv'
+        response['Content-Disposition'] = 'attachment; filename=result.csv'
         return response
 
     sum_scores.short_description = 'Sum Scores of Selected Exams'
