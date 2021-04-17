@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Sum
 from django.utils.safestring import mark_safe
 
-from karsoogh.settings import GRADE, CONTENT_TYPE, GENDER
+from karsoogh.settings import GRADE, CONTENT_TYPE, GENDER, STUDENT_EXAM_STATUS
 
 
 class BaseFieldsModel(models.Model):
@@ -101,17 +101,6 @@ class PaymentResCode(models.Model):
         return self.desc
 
 
-class Exam(BaseFieldsModel):
-    title = models.CharField(max_length=255, verbose_name='عنوان')
-    holding_date = models.DateTimeField(verbose_name='تاریخ برگزاری', null=True, blank=True)
-    ending_date = models.DateTimeField(verbose_name='تاریخ خاتمه', null=True, blank=True)
-    status = models.IntegerField(verbose_name='وضعیت', default=0)
-    min_score = models.IntegerField(default=0, verbose_name='کمترین نمره')
-
-    def __str__(self):
-        return self.title
-
-
 class Question(BaseFieldsModel):
     title = models.CharField(max_length=255, verbose_name='عنوان')
     description = models.TextField(verbose_name='توضیحات', null=True, blank=True)
@@ -157,16 +146,24 @@ class Answer(BaseFieldsModel):
                                    self.student.first_name, self.student.last_name)
 
 
+class Exam(BaseFieldsModel):
+    title = models.CharField(max_length=255, verbose_name='عنوان')
+    required_score = models.IntegerField(default=0, verbose_name='کف نمره‌ی قبولی')
+    start_date = models.DateTimeField(verbose_name='تاریخ شروع', null=True, blank=True)
+    finish_date = models.DateTimeField(verbose_name='تاریخ پایان', null=True, blank=True)
+    prerequisite = models.ForeignKey('Exam', on_delete=models.PROTECT, related_name='prerequisite_exam',
+                                     verbose_name='پیش‌نیاز', null=True, blank=True)
+    cost = models.IntegerField(verbose_name='هزینه ثبت‌نام (ریال)', default=0, )
+
+    def __str__(self):
+        return self.title
+
+
 class ExamStudent(BaseFieldsModel):
     exam = models.ForeignKey('Exam', on_delete=models.PROTECT, verbose_name='آزمون')
     student = models.ForeignKey('Student', on_delete=models.PROTECT, verbose_name='دانش آموز')
     score = models.IntegerField(default=0, null=True, blank=True, verbose_name='نمره')
-
-    # student_status = models.BooleanField(default=False, verbose_name='وضعیت دانش آموز')
-    # can_register = models.BooleanField(default=False, verbose_name='مجاز به ثبت نام')
-    # is_preregister = models.BooleanField(default=False, verbose_name='وضعیت پیش ثبت نام')
-    # is_register_complete = models.BooleanField(default=False, verbose_name='وضعیت ثبت نام نهایی')
-    # is_pass = models.BooleanField(default=False, verbose_name='قبولی در آزمون')
+    status = models.IntegerField(choices=STUDENT_EXAM_STATUS, verbose_name='وضعیت دانش‌آموز نسبت به آزمون', default=0)
 
     def __str__(self):
         return '{} | {}'.format(self.exam.title, self.student)

@@ -39,6 +39,12 @@ class AnswerAdmin(admin.ModelAdmin):
 
 @admin.register(Exam)
 class ExamAdmin(admin.ModelAdmin):
+    def temporary(self, request, queryset):
+        pass
+
+    def set_exam_participants(self, request, queryset):
+        pass
+
     def sum_scores(self, request, queryset):
         answers = list(Answer.objects.all())
         students = list(Student.objects.all())
@@ -85,6 +91,9 @@ class ExamAdmin(admin.ModelAdmin):
         response['Content-Disposition'] = 'attachment; filename=result.csv'
         return response
 
-    sum_scores.short_description = 'Sum Scores of Selected Exams'
-    get_student_info_csv.short_description = 'Get Students Score in Selected Exams'
-    actions = [sum_scores, get_student_info_csv]
+    set_exam_participants.short_description = \
+        'تعیین شرکت‌کنندگان در آزمون‌های انتخاب‌شده (تنها در صورتی که آزمون‌های انتخابی بدون هزینه باشند)'
+    sum_scores.short_description = 'جمع‌زدن نمرات دانش‌آموزان در آزمون‌های انتخاب‌شده (این فرآیند زمان‌بر است!)'
+    get_student_info_csv.short_description = 'دریافت فایل اکسل نمرات دانش‌آموزان در آزمون‌های انتخاب‌شده'
+    temporary.short_description = 'موقت (تعیین شرکت‌کنندگان آزمون اول)'
+    actions = [sum_scores, get_student_info_csv, set_exam_participants, temporary]

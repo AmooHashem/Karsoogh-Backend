@@ -171,8 +171,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Iran'
 
 USE_I18N = True
 
@@ -191,6 +190,7 @@ MEDIA_ROOT = rel('media')
 
 MEDIA_URL = '/media/'
 
+# payment properties:
 API_TOKEN = '19e8961b-ad5a-4a65-807a-087c777f6e1b'
 SANDBOX = '0'
 
@@ -217,8 +217,16 @@ CONTENT_TYPE = (
     (5, 'پاسخ'),
 )
 
+STUDENT_EXAM_STATUS = (
+    (0, 'مجاز به ثبت‌نام'),
+    (1, 'ثبت‌نام کرده'),
+    (2, 'پذیرفته‌شده'),
+    (3, 'پذیرفته‌نشده'),
+)
+
 SESSION_TIME = 1440
 
+# formula0
 PROBLEM_SUBJECTS = (
     (0, 'اقتصاد - سطح ۱'),
     (1, 'اقتصاد - سطح ۲'),

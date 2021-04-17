@@ -201,6 +201,7 @@ def pay_request(request):
         return get_response(601)
 
 
+# todo: should be removed
 @csrf_exempt
 @check_token
 def pay_ignore(request):
