@@ -40,60 +40,89 @@ class AnswerAdmin(admin.ModelAdmin):
 @admin.register(Exam)
 class ExamAdmin(admin.ModelAdmin):
     def temporary(self, request, queryset):
-        pass
+        students = Student.objects.all()
+        for exam in queryset:
+            for student in students:
+                exam_student = ExamStudent.objects.filter(exam=exam, student=student).first()
+                if not exam_student:
+                    exam_student = ExamStudent(exam=exam, student=student)
+                    exam_student.save()
+                if student.status == 10 or student.status == 20:
+                    exam_student.status = 1
+                    exam_student.save()
+                else:
+                    exam_student.delete()
 
     def set_exam_participants(self, request, queryset):
-        pass
-
-    def sum_scores(self, request, queryset):
-        answers = list(Answer.objects.all())
-        students = list(Student.objects.all())
         for selected_exam in queryset:
-            for student in students:
-                exam_student = ExamStudent.objects.filter(exam=selected_exam, student=student)
-                if len(exam_student) == 0:
-                    ExamStudent.objects.create(exam=selected_exam, student=student)
-                else:
-                    exam_student[0].score = 0
-                    exam_student[0].save()
+            if not selected_exam.prerequisite:
+                continue
+
+            selected_exam_students = ExamStudent.objects.filter(exam=selected_exam)
+            for selected_exam_student in selected_exam_students:
+                selected_exam_student.delete()
+
+            for prerequisite_exam_student in ExamStudent.objects.filter(exam=selected_exam.prerequisite):
+                if prerequisite_exam_student.status == 2:
+                    new_exam_student = \
+                        ExamStudent(exam=selected_exam, student=prerequisite_exam_student.student, status=0)
+                    new_exam_student.save()
+
+    def set_exam_final_result(self, request, queryset):
+        for selected_exam in queryset:
+            all_answers = list(Answer.objects.all())
+            answers = []
+            for answer in all_answers:
+                if answer.question_content.question.exam == selected_exam:
+                    answers.append(answer)
+
+            for exam_student in ExamStudent.objects.filter(exam=selected_exam):
+                exam_student.score = 0
+                exam_student.save()
 
             for answer in answers:
-                answer_exam = answer.question_content.question.exam
-                if selected_exam != answer_exam:
-                    continue
                 student = answer.student
                 exam_student = ExamStudent.objects.get(exam=selected_exam, student=student)
-                print(answer.score)
                 exam_student.score = exam_student.score + answer.score
                 exam_student.save()
 
-    def get_student_info_csv(self, request, queryset):
-        file = open('answer.csv', 'w')
-        writer = csv.writer(file)
-        students = list(Student.objects.all())
-        first_row = ['کد ملی', 'نام', 'نام خانوادگی', 'پایه', 'مدرسه', 'شهر', 'استان']
-        for exam in queryset:
-            first_row.append(exam.title)
-        writer.writerow(first_row)
-        for student in students:
-            if not student.city or not student.grade:  # todo: fix in a better way! (for example, have a is_valid function)
-                continue
-            row = [student.national_code, student.first_name, student.last_name, student.grade, student.school_name,
-                   student.city.title, student.city.province.title]
-            for exam in queryset:
-                exam_student = ExamStudent.objects.get(exam=exam, student=student)
-                row.append(exam_student.score)
-            writer.writerow(row)
-        file.close()
+            for exam_student in ExamStudent.objects.filter(exam=selected_exam):
+                if exam_student.score >= selected_exam.required_score:
+                    exam_student.status = 2
+                else:
+                    exam_student.status = 3
+                exam_student.save()
 
+    def get_student_info_csv(self, request, queryset):
+        if len(queryset) > 1:
+            return
+        selected_exam = queryset[0]
+        selected_exam_students = ExamStudent.objects.filter(exam=selected_exam)
+        file = open('result.csv', 'w')
+        writer = csv.writer(file)
+        first_row = ['کد ملی', 'نام', 'نام خانوادگی', 'پایه', 'مدرسه', 'شهر', 'استان', 'وضعیت', 'نمره']
+        writer.writerow(first_row)
+
+        for selected_exam_student in selected_exam_students:
+            student = selected_exam_student.student
+            row = [student.national_code, student.first_name, student.last_name, student.grade, student.school_name,
+                   student.city.title if student.city else '', student.city.province.title if student.city else '',
+                   STUDENT_EXAM_STATUS[selected_exam_student.status][1],
+                   selected_exam_student.score]
+            writer.writerow(row)
+
+        file.close()
         f = open('result.csv', 'r')
         response = HttpResponse(f, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=result.csv'
         return response
 
     set_exam_participants.short_description = \
-        'تعیین شرکت‌کنندگان در آزمون‌های انتخاب‌شده (تنها در صورتی که آزمون‌های انتخابی بدون هزینه باشند)'
-    sum_scores.short_description = 'جمع‌زدن نمرات دانش‌آموزان در آزمون‌های انتخاب‌شده (این فرآیند زمان‌بر است!)'
-    get_student_info_csv.short_description = 'دریافت فایل اکسل نمرات دانش‌آموزان در آزمون‌های انتخاب‌شده'
+        'تعیین شرکت‌کنندگان اولیه در آزمون‌های انتخاب‌شده (تنها در صورتی که آزمون‌های انتخابی بدون هزینه باشند)'
+    set_exam_final_result.short_description = \
+        'جمع‌زدن نمرات و تعیین پذیرفته‌شدگان در آزمون‌های انتخاب‌شده (این فرآیند زمان‌بر است!)'
+    get_student_info_csv.short_description = \
+        'دریافت فایل اکسل اطلاعات دانش‌آموزان در آزمون انتخاب‌شده (فقط یک آزمون انتخاب شود!)'
     temporary.short_description = 'موقت (تعیین شرکت‌کنندگان آزمون اول)'
-    actions = [sum_scores, get_student_info_csv, set_exam_participants, temporary]
+    actions = [set_exam_final_result, get_student_info_csv, set_exam_participants, temporary]
+    list_display = ('id', 'title')
