@@ -41,17 +41,23 @@ class AnswerAdmin(admin.ModelAdmin):
 class ExamAdmin(admin.ModelAdmin):
     def temporary(self, request, queryset):
         students = Student.objects.all()
-        for exam in queryset:
+        for selected_exam in queryset:
             for student in students:
-                exam_student = ExamStudent.objects.filter(exam=exam, student=student).first()
+                exam_student = ExamStudent.objects.filter(exam=selected_exam, student=student).first()
                 if not exam_student:
-                    exam_student = ExamStudent(exam=exam, student=student)
+                    exam_student = ExamStudent(exam=selected_exam, student=student)
                     exam_student.save()
                 if student.status == 10 or student.status == 20:
                     exam_student.status = 1
                     exam_student.save()
                 else:
                     exam_student.delete()
+
+            answers = Answer.objects.all()
+            for answer in answers:
+                exam_student = ExamStudent.objects.filter(exam=selected_exam, student=answer.student)
+                if len(exam_student) != 1:
+                    answer.delete()
 
     def set_exam_participants(self, request, queryset):
         for selected_exam in queryset:
