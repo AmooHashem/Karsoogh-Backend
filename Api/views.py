@@ -20,7 +20,7 @@ from Api.decorators import check_token
 from Api.forms import AnswerForm
 from Api.functions import get_response, get_expire_time, timestamp
 from Api.models import Payment, Student, PaymentResCode, Province, City, School, Question, QuestionContent, Answer, \
-    ExamStudent
+    ExamStudent, Exam
 from karsoogh.settings import API_TOKEN, SANDBOX
 
 
@@ -384,17 +384,57 @@ def school(request):
 #     #     pr.save()
 #     return r
 
+@csrf_exempt
+@check_token
+def get_student_exams(request):
+    if request.method != "GET":
+        return get_response(601)
+    student = request.student
+    exam_students = ExamStudent.objects.filter(student=student)
+    result = []
+    for exam_student in exam_students:
+        result.append({
+            'status': exam_student.status,
+            'id': exam_student.exam.id,
+            'title': exam_student.exam.title,
+            'start_date': exam_student.exam.start_date,
+            'finish_date': exam_student.exam.finish_date,
+            'registration_deadline': exam_student.exam.registration_deadline,
+            'registration_description': exam_student.exam.registration_description,
+            'cost': exam_student.exam.cost,
+        })
+    return get_response(62, json.dumps(result, default=str))
+
+
+@csrf_exempt
+@check_token
+def register(request):
+    if request.method != "POST":
+        return get_response(601)
+    exam_id = request.POST.get('exam_id')
+    student = request.student
+    exam_student = ExamStudent.objects.get(exam__id=exam_id, student=student)
+    exam = exam_student.exam
+    if exam.cost == 0 or exam.prerequisite:
+        exam_student.status = 1
+        exam_student.save()
+    else:
+        pass  # todo
+    return get_response(62)
+
 
 @csrf_exempt
 @check_token
 def get_question(request):
-    if request.method == "POST":
-        try:
-            exam_id = request.POST.get('exam_id')
-            return get_response(62, json.dumps(list(Question.objects.filter(exam_id=exam_id, status=1).values('id'))))
-        except Exception as d:
-            return get_response(600)
-    return get_response(601)
+    if request.method != "POST":
+        return get_response(601)
+
+    exam_id = request.POST.get('exam_id')
+    exam = get_object_or_404(Exam, id=exam_id)
+    if exam.start_date.timestamp() < datetime.now().timestamp() < exam.finish_date.timestamp():
+        return get_response(62, json.dumps(list(Question.objects.filter(exam_id=exam_id, status=1).values('id'))))
+    else:
+        return get_response(800)
 
 
 @csrf_exempt

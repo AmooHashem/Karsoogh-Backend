@@ -3,6 +3,8 @@ from Api import views
 
 app_name = 'Api'
 
+
+
 urlpatterns = [
     # path('', views.home, name='home'),
     # path('test/', views.test, name='test'),
@@ -28,6 +30,8 @@ urlpatterns = [
     path('school/', views.school, name='school'),  # todo: from front, add school if does not exist
     path('students/', views.students, name='students'),
 
+    path('exam/', views.get_student_exams, name='get exams of student'),
+    path('exam/register/', views.register, name='register in exam'),
     path('exam/question/list/', views.get_question, name='get_question'),
     path('exam/question/<int:question_id>/content/', views.get_content, name='get_content'),
     path('exam/answer/', views.answer, name='answers'),
