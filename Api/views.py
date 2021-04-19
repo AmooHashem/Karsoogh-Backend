@@ -399,6 +399,7 @@ def get_student_exams(request):
             'title': exam_student.exam.title,
             'start_date': exam_student.exam.start_date,
             'finish_date': exam_student.exam.finish_date,
+            'registration_start': exam_student.exam.registration_start,
             'registration_deadline': exam_student.exam.registration_deadline,
             'registration_description': exam_student.exam.registration_description,
             'cost': exam_student.exam.cost,

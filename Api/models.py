@@ -150,7 +150,8 @@ class Exam(BaseFieldsModel):
     title = models.CharField(max_length=255, verbose_name='عنوان')
     required_score = models.IntegerField(default=0, verbose_name='نمره‌ی قبولی')
     registration_description = models.TextField(verbose_name='توضیحات ثبت‌نام', null=True, blank=True)
-    registration_deadline = models.DateTimeField(verbose_name='مهلت ثبت‌نام', null=True, blank=True)
+    registration_start = models.DateTimeField(verbose_name='شروع ثبت‌نام', null=True, blank=True)
+    registration_deadline = models.DateTimeField(verbose_name='پایان ثبت‌نام', null=True, blank=True)
     start_date = models.DateTimeField(verbose_name='تاریخ شروع', null=True, blank=True)
     finish_date = models.DateTimeField(verbose_name='تاریخ پایان', null=True, blank=True)
     prerequisite = models.ForeignKey('Exam', on_delete=models.PROTECT, related_name='prerequisite_exam',
