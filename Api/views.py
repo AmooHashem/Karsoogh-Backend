@@ -416,7 +416,7 @@ def register(request):
     student = request.student
     exam_student = ExamStudent.objects.get(exam__id=exam_id, student=student)
     exam = exam_student.exam
-    if exam.cost == 0 or exam.prerequisite:
+    if exam.cost == 0:
         exam_student.status = 1
         exam_student.save()
     else:
