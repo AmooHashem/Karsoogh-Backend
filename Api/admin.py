@@ -17,6 +17,63 @@ admin.site.register(QuestionContent)
 admin.site.register(ExamStudent)
 
 
+class AnswersListFilter(admin.SimpleListFilter):
+    """
+    This filter will always return a subset of the instances in a Model, either filtering by the
+    user choice or by a default value.
+    """
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = 'Student'
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'national_code'
+
+    default_value = None
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        filter_list = []
+        queryset = Student.objects.all()
+        for student in queryset:
+            filter_list.append(
+                (student.national_code, f'{student.first_name} {student.last_name} | {student.national_code}')
+            )
+        return filter_list
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        # Compare the requested value to decide how to filter the queryset.
+        if self.value():
+            return queryset.filter(student__national_code=self.value())
+        return queryset
+
+    # def value(self):
+    #     """
+    #     Overriding this method will allow us to always have a default value.
+    #     """
+    #     value = super(AnswersListFilter, self).value()
+    #     if value is None:
+    #         if self.default_value is None:
+    #             # If there is at least one Species, return the first by name. Otherwise, None.
+    #             first_species = Answer.objects.order_by('student__national_code').first()
+    #             value = None if first_species is None else first_species.id
+    #             self.default_value = value
+    #         else:
+    #             value = self.default_value
+    #     return str(value)
+
+
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
     def download_csv(self, request, queryset):
@@ -33,6 +90,7 @@ class AnswerAdmin(admin.ModelAdmin):
         return response
 
     list_display = ('id', 'question_content_id', 'student')
+    list_filter = (AnswersListFilter,)
     download_csv.short_description = 'Export Selected as csv'
     actions = [download_csv]
 
