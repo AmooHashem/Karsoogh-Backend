@@ -24,7 +24,7 @@ class AnswersListFilter(admin.SimpleListFilter):
     """
     # Human-readable title which will be displayed in the
     # right admin sidebar just above the filter options.
-    title = 'Student'
+    title = 'Student National Code'
 
     # Parameter for the filter that will be used in the URL query.
     parameter_name = 'national_code'
@@ -39,13 +39,14 @@ class AnswersListFilter(admin.SimpleListFilter):
         human-readable name for the option that will appear
         in the right sidebar.
         """
-        filter_list = []
-        queryset = Student.objects.all()
-        for student in queryset:
-            filter_list.append(
-                (student.national_code, f'{student.first_name} {student.last_name} | {student.national_code}')
-            )
-        return filter_list
+        # filter_list = []
+        # queryset = Student.objects.all()
+        # for student in queryset:
+        #     filter_list.append(
+        #         (student.national_code, f'{student.first_name} {student.last_name} | {student.national_code}')
+        #     )
+        return [('123456789',
+                 'با کلیک بر روی این گزینه، جواب‌های دانش‌آموز با کد ملی ۱۲۳۴۵۶۷۸۹ نمایش داده میشه (که منطقاً خالیه!) حالا شما می‌تونید توی آدرس به جای ۱۲۳۴۵۶۷۸۹، هر کد ملی‌ای رو که می‌خواید، بذارید!')]
 
     def queryset(self, request, queryset):
         """
