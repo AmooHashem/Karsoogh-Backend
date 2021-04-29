@@ -11,7 +11,7 @@ urlpatterns = [
 
     path('get/time/', views.get_time, name='get_time'),
 
-    path('student/register/', views.register, name='register'),
+    path('student/register/', views.create_account, name='create account'),
     path('student/register/completed/', views.register_complete, name='register_complete'),
     # todo: change to fill profile
     path('student/change/password/', views.change_password, name='change_password'),

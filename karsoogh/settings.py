@@ -224,7 +224,7 @@ STUDENT_EXAM_STATUS = (
     (3, 'پذیرفته‌نشده'),
 )
 
-SESSION_TIME = 1440
+SESSION_TIME = 144000
 
 # formula0
 PROBLEM_SUBJECTS = (

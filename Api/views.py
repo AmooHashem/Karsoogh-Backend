@@ -30,7 +30,7 @@ def get_time(request):
 
 
 @csrf_exempt
-def register(request):
+def create_account(request):
     if request.method == "POST":
         try:
             post_data = request.POST
@@ -474,38 +474,38 @@ def get_student_content(request, qc_id):
 @csrf_exempt
 @check_token
 def answer(request):
-    if request.method == "POST":
-        try:
-            qc_id = request.POST.get('qc_id')
-            instance = Answer.objects.filter(question_content_id=qc_id, student=request.student).first()
-            form = AnswerForm(request.POST, request.FILES, instance=instance)
-            if form.is_valid():
-                with transaction.atomic():
-                    if instance and request.POST.get('new_set') == 'true':
-                        instance.delete()
-                    f = form.save(commit=False)
-                    f.question_content_id = qc_id
-                    f.student = request.student
-                    if request.FILES.get('file') and request.POST.get('answer'):
-                        f.save()
-                        res_code = 67
-                    elif request.FILES.get('file'):
-                        f.save()
-                        res_code = 65
-                    elif request.POST.get('answer'):
-                        f.save()
-                        res_code = 66
-                    elif request.POST.get('new_set') == 'true':
-                        res_code = 69
-                    else:
-                        res = get_response(667)
-                        transaction.set_rollback(True)
-                        return res
-                    return get_response(res_code, '{{"answer_id": {}}}'.format(f.pk))
-            return get_response(666)
-        except Exception as d:
-            return get_response(600)
-    return get_response(601)
+    if request.method != "POST":
+        return get_response(601)
+    try:
+        qc_id = request.POST.get('qc_id')
+        instance = Answer.objects.filter(question_content_id=qc_id, student=request.student).first()
+        form = AnswerForm(request.POST, request.FILES, instance=instance)
+        if form.is_valid():
+            with transaction.atomic():
+                if instance and request.POST.get('new_set') == 'true':
+                    instance.delete()
+                f = form.save(commit=False)
+                f.question_content_id = qc_id
+                f.student = request.student
+                if request.FILES.get('file') and request.POST.get('answer'):
+                    f.save()
+                    res_code = 67
+                elif request.FILES.get('file'):
+                    f.save()
+                    res_code = 65
+                elif request.POST.get('answer'):
+                    f.save()
+                    res_code = 66
+                elif request.POST.get('new_set') == 'true':
+                    res_code = 69
+                else:
+                    res = get_response(667)
+                    transaction.set_rollback(True)
+                    return res
+                return get_response(res_code, '{{"answer_id": {}}}'.format(f.pk))
+        return get_response(666)
+    except Exception as d:
+        return get_response(600)
 
 
 @csrf_exempt
