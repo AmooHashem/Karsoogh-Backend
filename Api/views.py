@@ -433,7 +433,12 @@ def get_question(request):
     exam_id = request.POST.get('exam_id')
     exam = get_object_or_404(Exam, id=exam_id)
     if exam.start_date.timestamp() < datetime.now().timestamp() < exam.finish_date.timestamp():
-        return get_response(62, json.dumps(list(Question.objects.filter(exam_id=exam_id, status=1).values('id'))))
+        data = {
+            'start_date': exam.start_date,
+            'finish_date': exam.finish_date,
+            'exam_question_ids': list(Question.objects.filter(exam_id=exam_id, status=1).values('id')),
+        }
+        return get_response(62, json.dumps(data, default=str))
     else:
         return get_response(800)
 
