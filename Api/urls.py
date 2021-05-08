@@ -28,7 +28,6 @@ urlpatterns = [
     path('city/', views.city, name='city'),
     path('city/detail/', views.get_city_details, name='get_city_details'),
     path('school/', views.school, name='school'),  # todo: from front, add school if does not exist
-    path('students/', views.students, name='students'),
 
     path('exam/', views.get_student_exams, name='get exams of student'),
     path('exam/register/', views.register, name='register in exam'),

@@ -17,7 +17,7 @@ admin.site.register(QuestionContent)
 admin.site.register(ExamStudent)
 
 
-class AnswersListFilter(admin.SimpleListFilter):
+class AnswersListFilterByNationalCode(admin.SimpleListFilter):
     """
     This filter will always return a subset of the instances in a Model, either filtering by the
     user choice or by a default value.
@@ -91,33 +91,13 @@ class AnswerAdmin(admin.ModelAdmin):
         return response
 
     list_display = ('id', 'question_content_id', 'student')
-    list_filter = (AnswersListFilter,)
+    list_filter = (AnswersListFilterByNationalCode,)
     download_csv.short_description = 'Export Selected as csv'
     actions = [download_csv]
 
 
 @admin.register(Exam)
 class ExamAdmin(admin.ModelAdmin):
-    def temporary(self, request, queryset):
-        students = Student.objects.all()
-        for selected_exam in queryset:
-            for student in students:
-                exam_student = ExamStudent.objects.filter(exam=selected_exam, student=student).first()
-                if not exam_student:
-                    exam_student = ExamStudent(exam=selected_exam, student=student)
-                    exam_student.save()
-                if student.status == 10 or student.status == 20:
-                    exam_student.status = 1
-                    exam_student.save()
-                else:
-                    exam_student.delete()
-
-            answers = Answer.objects.all()
-            for answer in answers:
-                exam_student = ExamStudent.objects.filter(exam=selected_exam, student=answer.student)
-                if len(exam_student) != 1:
-                    answer.delete()
-
     def set_exam_participants(self, request, queryset):
         for selected_exam in queryset:
             if not selected_exam.prerequisite:
@@ -163,19 +143,29 @@ class ExamAdmin(admin.ModelAdmin):
             return
         selected_exam = queryset[0]
         selected_exam_students = ExamStudent.objects.filter(exam=selected_exam)
+        answers_of_selected_exam = []
+        for answer in Answer.objects.all():
+            if answer.question_content.question.exam == selected_exam:
+                answers_of_selected_exam.append(answer)
+
         file = open('students.csv', 'w')
         writer = csv.writer(file)
         first_row = ['شناسه', 'کد ملی', 'نام', 'نام خانوادگی', 'شماره تلفن', 'شماره تلفن زاپاس', 'پایه', 'مدرسه',
-                     'شماره تلفن مدرسه', 'شهر', 'استان', 'نام مدیر', 'شماره تلفن مدیر', 'وضعیت', 'نمره']
+                     'شماره تلفن مدرسه', 'شهر', 'استان', 'نام مدیر', 'شماره تلفن مدیر', 'وضعیت', 'تعداد پاسخ ارسال‌شده',
+                     'نمره']
         writer.writerow(first_row)
 
         for selected_exam_student in selected_exam_students:
             student = selected_exam_student.student
+            submitted_answers_count = 0
+            for answer in answers_of_selected_exam:
+                if answer.student == student:
+                    submitted_answers_count += 1
             row = [student.id, student.national_code, student.first_name, student.last_name, student.phone1,
                    student.phone2, student.grade, student.school_name, student.school_phone,
                    student.city.title if student.city else '', student.city.province.title if student.city else '',
                    student.manager_name, student.manager_phone, STUDENT_EXAM_STATUS[selected_exam_student.status][1],
-                   selected_exam_student.score]
+                   submitted_answers_count, selected_exam_student.score]
             writer.writerow(row)
 
         file.close()
@@ -190,6 +180,5 @@ class ExamAdmin(admin.ModelAdmin):
         'جمع‌زدن نمرات و تعیین پذیرفته‌شدگان در آزمون‌های انتخاب‌شده (این فرآیند زمان‌بر است!)'
     get_student_info_csv.short_description = \
         'دریافت فایل اکسل اطلاعات دانش‌آموزان در آزمون انتخاب‌شده (فقط یک آزمون انتخاب شود!)'
-    temporary.short_description = 'موقت (تعیین شرکت‌کنندگان آزمون اول)'
-    actions = [set_exam_final_result, get_student_info_csv, set_exam_participants, temporary]
+    actions = [set_exam_final_result, get_student_info_csv, set_exam_participants]
     list_display = ('id', 'title')

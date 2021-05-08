@@ -314,18 +314,6 @@ def student_check(request):
 
 
 @csrf_exempt
-def students(request):
-    if request.method == "GET":
-        if request.GET.get('keygen') == 'c89fpg20xtg92c5110322':
-            data = list(Student.objects.all().values(
-                'id', 'national_code', 'phone1', 'phone2', 'first_name', 'last_name',
-                'grade', 'school_name', 'school_phone', 'manager_name', 'manager_phone',
-                'status', 'city', 'city__province'))
-            return get_response(62, serializers.serialize('json', data))
-    return get_response(601)
-
-
-@csrf_exempt
 def province(request):
     if request.method == "GET":
         return get_response(62, json.dumps(list(Province.objects.all().values('id', 'title'))))
