@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:80',
+    'http://localhost:3000',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'https://interkarsolar.ir',
@@ -92,6 +93,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Api.apps.ApiConfig',
+    'Formula0.apps.Formula0Config',
     'corsheaders',
 ]
 
@@ -169,8 +171,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Iran'
 
 USE_I18N = True
 
@@ -189,14 +190,18 @@ MEDIA_ROOT = rel('media')
 
 MEDIA_URL = '/media/'
 
+# payment properties:
 API_TOKEN = '19e8961b-ad5a-4a65-807a-087c777f6e1b'
 SANDBOX = '0'
 
-GRADE_CHOICE = (
+GRADE = (
+    (6, 'ششم'),
     (7, 'هفتم'),
     (8, 'هشتم'),
     (9, 'نهم'),
     (10, 'دهم'),
+    (11, 'یازدهم'),
+    (12, 'دوازدهم'),
 )
 
 GENDER = (
@@ -212,4 +217,45 @@ CONTENT_TYPE = (
     (5, 'پاسخ'),
 )
 
-SESSION_TIME = 1440
+STUDENT_EXAM_STATUS = (
+    (0, 'مجاز به ثبت‌نام'),
+    (1, 'ثبت‌نام شده'),
+    (2, 'پذیرفته‌شده'),
+    (3, 'پذیرفته‌نشده'),
+)
+
+SESSION_TIME = 144000
+
+# formula0
+PROBLEM_SUBJECTS = (
+    (0, 'اقتصاد - سطح ۱'),
+    (1, 'اقتصاد - سطح ۲'),
+    (2, 'ریاضی - سطح ۱'),
+    (3, 'ریاضی - سطح ۲'),
+    (4, 'زیست - سطح ۱'),
+    (5, 'زیست - سطح ۲'),
+    (6, 'شیمی - سطح ۱'),
+    (7, 'شیمی - سطح ۲'),
+    (8, 'فیزیک - سطح ۱'),
+    (9, 'فیزیک - سطح ۲'),
+    (10, 'کامپیوتر - سطح ۱'),
+    (11, 'کامپیوتر - سطح ۲'),
+    (12, 'نجوم - سطح ۱'),
+    (13, 'نجوم - سطح ۲'),
+)
+
+PROBLEM_STATUS = (
+    (0, 'گرفته نشده'),
+    (1, 'گرفته شده'),
+    (2, 'در حال تصحیح'),
+    (3, 'صحیح شده'),
+    (4, 'به مزایده گذاشته شده'),
+    (5, 'در مزایده واگذار شده'),
+)
+
+GAME_MODE = (
+    (0, 'عادی'),
+    (1, 'مزایده'),
+)
+
+NEW_RESPONSE_TEMPLATE = '{{ "message": "{}", "data": {} }}'
