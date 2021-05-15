@@ -521,11 +521,13 @@ def set_score(request):
         comment = request.POST.get('comment')
         student_answer = get_object_or_404(Answer, id=ans_id)
         if new_score is not None:
-            if which_score == 1:
-                student_answer.score1 = new_score
-            elif which_score == 2:
-                student_answer.score2 = new_score
-        student_answer.comment = comment
+            student_answer.score1 = new_score
+            # if which_score == 1:
+            #     student_answer.score1 = new_score
+            # elif which_score == 2:
+            #     student_answer.score2 = new_score
+        if comment is not None:
+            student_answer.comment = comment
         student_answer.save()
         return get_response(62)
     return get_response(601)
