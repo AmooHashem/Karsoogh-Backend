@@ -128,7 +128,7 @@ class ExamAdmin(admin.ModelAdmin):
             for answer in answers:
                 student = answer.student
                 exam_student = ExamStudent.objects.get(exam=selected_exam, student=student)
-                exam_student.score = exam_student.score + answer.score
+                exam_student.score = exam_student.score + answer.final_score
                 exam_student.save()
 
             for exam_student in ExamStudent.objects.filter(exam=selected_exam):

@@ -516,11 +516,15 @@ def show_answer(request):
 def set_score(request):
     if request.method == "POST":
         ans_id = request.POST.get('ans_id')
-        score = request.POST.get('score')
+        new_score = request.POST.get('score')
+        which_score = request.POST.get('score_number')
         comment = request.POST.get('comment')
         student_answer = get_object_or_404(Answer, id=ans_id)
-        if score is not None:
-            student_answer.score = score
+        if new_score is not None:
+            if which_score == 1:
+                student_answer.score1 = new_score
+            elif which_score == 2:
+                student_answer.score2 = new_score
         student_answer.comment = comment
         student_answer.save()
         return get_response(62)
