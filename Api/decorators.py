@@ -21,4 +21,5 @@ def check_token(func):
             return func(request, *args, **kwargs)
         except Exception as ex:
             return get_response(600, '"{}"'.format(ex))
+
     return wrapped_func

@@ -145,10 +145,6 @@ class Answer(BaseFieldsModel):
     final_score = models.IntegerField(default=0, verbose_name='نمره‌ی نهایی')
     comment = models.TextField(verbose_name='نظر مصححین', blank=True, null=True)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        print("Salam")
-
     def __str__(self):
         return '{} | {} {}'.format(self.question_content.question.title,
                                    self.student.first_name, self.student.last_name)
