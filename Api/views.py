@@ -506,8 +506,8 @@ def show_answer(request):
     if request.method == "POST":
         ans_id = request.POST.get('ans_id')
         ans = get_object_or_404(Answer, id=ans_id)
-        data = '{{"text": "{}", "answer_text": "{}", "answer_file": "{}", "comment": "{}"}}' \
-            .format(ans.question_content.question, ans.answer, ans.file, ans.comment)
+        data = '{{"text": "{}", "answer_text": "{}", "answer_file": "{}", "comment": "{}", "score1": "{}", "score2": "{}"}}' \
+            .format(ans.question_content.question, ans.answer, ans.file, ans.comment, ans.score1, ans.score2)
         return get_response(62, data)
     return get_response(601)
 
@@ -516,61 +516,16 @@ def show_answer(request):
 def set_score(request):
     if request.method == "POST":
         ans_id = request.POST.get('ans_id')
-        new_score = request.POST.get('score')
-        which_score = request.POST.get('score_number')
+        new_score1 = request.POST.get('score1')
+        new_score2 = request.POST.get('score2')
         comment = request.POST.get('comment')
         student_answer = get_object_or_404(Answer, id=ans_id)
-        if new_score is not None:
-            student_answer.score1 = new_score
-            # if which_score == 1:
-            #     student_answer.score1 = new_score
-            # elif which_score == 2:
-            #     student_answer.score2 = new_score
+        if new_score1 is not None:
+            student_answer.score1 = new_score1
+        if new_score2 is not None:
+            student_answer.score2 = new_score2
         if comment is not None:
             student_answer.comment = comment
         student_answer.save()
         return get_response(62)
-    return get_response(601)
-
-
-@csrf_exempt
-@check_token
-def sum_score(request):
-    if request.method == "POST":
-        exam_id = request.POST.get('exam_id')
-        student = request.student
-        exam_student = ExamStudent.objects.get(exam__id=exam_id, student=student)
-        # ans = 0
-        # print('salam1')
-        exam_stu = ExamStudent.objects.get(id=exam_student.id)
-        # print('salam12')
-        query = Answer.objects.filter(student=exam_stu.student,
-                                      question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
-        # print('salam123')
-        # data = '{{ "sum_score" : {} }}'.format(ans)
-        return get_response(62, query)
-    return get_response(601)
-
-
-@csrf_exempt
-@check_token
-def is_pass(request):
-    # print('hello')
-    if request.method == "POST":
-        # print('enterTheF')
-        exam_id = request.POST.get('exam_id')
-        student = request.student
-        exam_student = ExamStudent.objects.get(exam__id=exam_id, student=student)
-        exam_stu = ExamStudent.objects.get(id=exam_student.id)
-        query = Answer.objects.filter(student=exam_stu.student,
-                                      question_content__question__exam__id=exam_stu.exam.id).aggregate(ans=Sum('score'))
-
-        if query['ans'] >= exam_stu.exam.min_score:
-            datat = '{{ "pass": True }}'
-            exam_stu.is_pass = True
-            exam_stu.save()
-            return get_response(62, datat)
-        else:
-            dataf = '{{ "pass": False }}'
-            return get_response(62, dataf)
     return get_response(601)

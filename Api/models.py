@@ -1,3 +1,5 @@
+import math
+
 from django.db import models
 from django.db.models import Sum
 from django.utils.safestring import mark_safe
@@ -139,8 +141,8 @@ class Answer(BaseFieldsModel):
                                          related_name='answer_qc')
     student = models.ForeignKey('Student', on_delete=models.PROTECT, verbose_name='دانش آموز',
                                 related_name='answer_student')
-    score1 = models.IntegerField(default=0, verbose_name='نمره‌ی تصحیح اول')
-    score2 = models.IntegerField(default=0, verbose_name='نمره‌ی تصحیح دوم')
+    score1 = models.IntegerField(blank=True, null=True, verbose_name='نمره‌ی تصحیح اول')
+    score2 = models.IntegerField(blank=True, null=True, verbose_name='نمره‌ی تصحیح دوم')
     is_correction_ok = models.BooleanField(default=False, verbose_name='آیا تصحیح نهایی شده است یا نه؟')
     final_score = models.IntegerField(default=0, verbose_name='نمره‌ی نهایی')
     comment = models.TextField(verbose_name='نظر مصححین', blank=True, null=True)
@@ -148,6 +150,16 @@ class Answer(BaseFieldsModel):
     def __str__(self):
         return '{} | {} {}'.format(self.question_content.question.title,
                                    self.student.first_name, self.student.last_name)
+
+    def save(self, *args, **kwargs):
+        if self.score1 is not None and self.score2 is not None:
+            if abs(int(self.score1) - int(self.score2)) <= 5:
+                self.is_correction_ok = True
+                self.final_score = (int(self.score1) + int(self.score2) + 1) / 2
+            else:
+                self.is_correction_ok = False
+                self.final_score = 0
+        super(Answer, self).save(*args, **kwargs)
 
 
 class Exam(BaseFieldsModel):
