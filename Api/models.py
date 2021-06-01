@@ -106,25 +106,25 @@ class PaymentResCode(models.Model):
 class Question(BaseFieldsModel):
     title = models.CharField(max_length=255, verbose_name='عنوان')
     description = models.TextField(verbose_name='توضیحات', null=True, blank=True)
-    status = models.IntegerField(verbose_name='وضعیت', default=0)
-    exam = models.ForeignKey('Exam', on_delete=models.PROTECT, verbose_name='آزمون', related_name='question_exam')
     score = models.IntegerField(verbose_name='نمره‌ی سوال', blank=True, null=True)
+    status = models.IntegerField(verbose_name='وضعیت', default=0)  # todo: remove or convert to boolean
+    exam = models.ForeignKey('Exam', on_delete=models.PROTECT, verbose_name='آزمون', related_name='question_exam')
 
     def __str__(self):
-        return self.title[0:30]
+        return f'{self.title} | {str(self.exam)}'
 
 
 class Content(BaseFieldsModel):
     title = models.CharField(max_length=255, verbose_name='عنوان محتوا')
     content = models.TextField(verbose_name='محتوا')
     content_type = models.IntegerField(choices=CONTENT_TYPE, verbose_name='نوع محتوا', default=1)
-    status = models.IntegerField(verbose_name='وضعیت', default=0)
+    status = models.IntegerField(verbose_name='وضعیت', default=0)  # todo: remove or convert to boolean
 
     def __str__(self):
         return self.title[0:30]
 
 
-class QuestionContent(BaseFieldsModel):
+class QuestionContent(BaseFieldsModel):  # todo: remove model!
     ordering = models.IntegerField(verbose_name='ترتیب', default=0)
     question = models.ForeignKey('Question', on_delete=models.PROTECT, verbose_name='سوال', related_name='qc_question')
     content = models.ForeignKey('Content', on_delete=models.PROTECT, verbose_name='محتوا', related_name='qc_content')
@@ -143,7 +143,7 @@ class Answer(BaseFieldsModel):
                                 related_name='answer_student')
     score1 = models.IntegerField(blank=True, null=True, verbose_name='نمره‌ی تصحیح اول')
     score2 = models.IntegerField(blank=True, null=True, verbose_name='نمره‌ی تصحیح دوم')
-    is_correction_ok = models.BooleanField(default=False, verbose_name='آیا تصحیح نهایی شده است یا نه؟')
+    is_correction_ok = models.BooleanField(default=False, verbose_name='آیا تصحیح نهایی شده است؟')
     final_score = models.IntegerField(default=0, verbose_name='نمره‌ی نهایی')
     comment = models.TextField(verbose_name='نظر مصححین', blank=True, null=True)
 

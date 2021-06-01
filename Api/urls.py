@@ -1,9 +1,6 @@
 from django.urls import path
 from Api import views
-
-app_name = 'Api'
-
-
+from .views import *
 
 urlpatterns = [
     # path('', views.home, name='home'),
@@ -29,7 +26,7 @@ urlpatterns = [
     path('city/detail/', views.get_city_details, name='get_city_details'),
     path('school/', views.school, name='school'),  # todo: from front, add school if does not exist
 
-    path('exam/', views.get_student_exams, name='get exams of student'),
+    path('exam/', views.get_student_exams, name='get exams of student'),  # make an api to create a exam_student
     path('exam/register/', views.register, name='register in exam'),
     path('exam/question/list/', views.get_question, name='get_question'),
     path('exam/question/<int:question_id>/content/', views.get_content, name='get_content'),

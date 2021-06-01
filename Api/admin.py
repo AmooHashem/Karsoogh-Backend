@@ -80,9 +80,9 @@ class AnswerAdmin(admin.ModelAdmin):
     def download_csv(self, request, queryset):
         file = open('answer.csv', 'w')
         writer = csv.writer(file)
-        writer.writerow(['id', 'qc_id'])
+        writer.writerow(['id', 'qc_id', 'آیا تصحیح نهایی شده است؟'])
         for answer in queryset:
-            writer.writerow([answer.id, answer.question_content.id])
+            writer.writerow([answer.id, answer.question_content.id, answer.is_correction_ok])
         file.close()
 
         f = open('answer.csv', 'r')
@@ -90,7 +90,7 @@ class AnswerAdmin(admin.ModelAdmin):
         response['Content-Disposition'] = 'attachment; filename=answer.csv'
         return response
 
-    list_display = ('id', 'question_content_id', 'student')
+    list_display = ('id', 'question_content_id', 'student', 'is_correction_ok')
     list_filter = (AnswersListFilterByNationalCode,)
     download_csv.short_description = 'Export Selected as csv'
     actions = [download_csv]
@@ -128,7 +128,8 @@ class ExamAdmin(admin.ModelAdmin):
             for answer in answers:
                 student = answer.student
                 exam_student = ExamStudent.objects.get(exam=selected_exam, student=student)
-                exam_student.score = exam_student.score + answer.final_score
+                score = answer.final_score * answer.question_content.question.score
+                exam_student.score = exam_student.score + score
                 exam_student.save()
 
             for exam_student in ExamStudent.objects.filter(exam=selected_exam):
@@ -175,7 +176,7 @@ class ExamAdmin(admin.ModelAdmin):
         return response
 
     set_exam_participants.short_description = \
-        'تعیین شرکت‌کنندگان اولیه در آزمون‌های انتخاب‌شده (تنها در صورتی که آزمون‌های انتخابی بدون هزینه باشند)'
+        'تعیین شرکت‌کنندگان اولیه در آزمون‌های انتخاب‌شده (تنها در صورتی که آزمون‌های انتخابی پیش‌نیاز داشته باشند)'
     set_exam_final_result.short_description = \
         'جمع‌زدن نمرات و تعیین پذیرفته‌شدگان در آزمون‌های انتخاب‌شده (این فرآیند زمان‌بر است!)'
     get_student_info_csv.short_description = \
