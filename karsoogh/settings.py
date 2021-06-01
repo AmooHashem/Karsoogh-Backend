@@ -95,7 +95,7 @@ INSTALLED_APPS = [
     'Api.apps.ApiConfig',
     'Formula0.apps.Formula0Config',
     'corsheaders',
-    'rest_framework',
+    # 'rest_framework',
 ]
 
 MIDDLEWARE = [
