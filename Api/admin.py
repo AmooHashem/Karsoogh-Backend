@@ -80,9 +80,9 @@ class AnswerAdmin(admin.ModelAdmin):
     def download_csv(self, request, queryset):
         file = open('answer.csv', 'w')
         writer = csv.writer(file)
-        writer.writerow(['id', 'qc_id', 'آیا تصحیح نهایی شده است؟'])
+        writer.writerow(['id', 'qc_id', 'نمره نهایی', 'آیا تصحیح نهایی شده است؟'])
         for answer in queryset:
-            writer.writerow([answer.id, answer.question_content.id, answer.is_correction_ok])
+            writer.writerow([answer.id, answer.question_content.id,  answer.final_score, answer.is_correction_ok])
         file.close()
 
         f = open('answer.csv', 'r')
