@@ -1,5 +1,5 @@
 /media
 /templates
 /.idea
-./db.sqlite3
-./answer.csv
+/db.sqlite3
+/venv
