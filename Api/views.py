@@ -4,10 +4,10 @@ from datetime import datetime, timedelta
 import random
 import logging
 
-from rest_framework import permissions, status
-from rest_framework.parsers import MultiPartParser
-from rest_framework.response import Response
-from rest_framework.views import APIView
+# from rest_framework import permissions, status
+# from rest_framework.parsers import MultiPartParser
+# from rest_framework.response import Response
+# from rest_framework.views import APIView
 
 logger = logging.getLogger(__name__)
 from django.shortcuts import get_object_or_404
@@ -536,23 +536,23 @@ def set_score(request):
     return get_response(601)
 
 
-class SetScore(APIView):
-    parser_class = (MultiPartParser,)
-    permission_classes = (permissions.AllowAny,)
-
-    def post(self, request):
-        ans_id = request.data.get('ans_id')
-        new_score1 = request.data.get('score1')
-        new_score2 = request.data.get('score2')
-        comment = request.data.get('comment')
-        student_answer = Answer.objects.filter(id=ans_id).first()
-        if student_answer is None:
-            return Response({'msg': 'پاسخی با این شناسه وجود ندارد.'}, status=status.HTTP_400_BAD_REQUEST)
-        if new_score1 is not None:
-            student_answer.score1 = new_score1
-        if new_score2 is not None:
-            student_answer.score2 = new_score2
-        if comment is not None:
-            student_answer.comment = comment
-        student_answer.save()
-        return Response({'msg': 'تغییرات با موفقیت ثبت شد.'}, status=status.HTTP_200_OK)
+# class SetScore(APIView):
+#     parser_class = (MultiPartParser,)
+#     permission_classes = (permissions.AllowAny,)
+#
+#     def post(self, request):
+#         ans_id = request.data.get('ans_id')
+#         new_score1 = request.data.get('score1')
+#         new_score2 = request.data.get('score2')
+#         comment = request.data.get('comment')
+#         student_answer = Answer.objects.filter(id=ans_id).first()
+#         if student_answer is None:
+#             return Response({'msg': 'پاسخی با این شناسه وجود ندارد.'}, status=status.HTTP_400_BAD_REQUEST)
+#         if new_score1 is not None:
+#             student_answer.score1 = new_score1
+#         if new_score2 is not None:
+#             student_answer.score2 = new_score2
+#         if comment is not None:
+#             student_answer.comment = comment
+#         student_answer.save()
+#         return Response({'msg': 'تغییرات با موفقیت ثبت شد.'}, status=status.HTTP_200_OK)
