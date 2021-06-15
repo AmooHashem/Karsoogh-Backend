@@ -82,7 +82,7 @@ class AnswerAdmin(admin.ModelAdmin):
         writer = csv.writer(file)
         writer.writerow(['id', 'qc_id', 'نمره نهایی', 'آیا تصحیح نهایی شده است؟'])
         for answer in queryset:
-            writer.writerow([answer.id, answer.question_content.id,  answer.final_score, answer.is_correction_ok])
+            writer.writerow([answer.id, answer.question_content.id, answer.final_score, answer.is_correction_ok])
         file.close()
 
         f = open('answer.csv', 'r')
@@ -113,7 +113,7 @@ class ExamAdmin(admin.ModelAdmin):
                         ExamStudent(exam=selected_exam, student=prerequisite_exam_student.student, status=0)
                     new_exam_student.save()
 
-    def set_exam_final_result(self, request, queryset):
+    def calculate_exam_final_result(self, request, queryset):
         for selected_exam in queryset:
             all_answers = list(Answer.objects.all())
             answers = []
@@ -132,6 +132,13 @@ class ExamAdmin(admin.ModelAdmin):
                 exam_student.score = exam_student.score + score
                 exam_student.save()
 
+            # todo: redundant
+            for exam_student in ExamStudent.objects.filter(exam=selected_exam):
+                exam_student.status = 1
+                exam_student.save()
+
+    def set_exam_final_result(self, request, queryset):
+        for selected_exam in queryset:
             for exam_student in ExamStudent.objects.filter(exam=selected_exam):
                 if exam_student.score >= selected_exam.required_score:
                     exam_student.status = 2
@@ -177,9 +184,11 @@ class ExamAdmin(admin.ModelAdmin):
 
     set_exam_participants.short_description = \
         'تعیین شرکت‌کنندگان اولیه در آزمون‌های انتخاب‌شده (تنها در صورتی که آزمون‌های انتخابی پیش‌نیاز داشته باشند)'
+    calculate_exam_final_result.short_description = \
+        'جمع‌زدن نمرات و تعیین نمرات نهایی آزمون (این فرآیند زمان‌بر است!)'
     set_exam_final_result.short_description = \
-        'جمع‌زدن نمرات و تعیین پذیرفته‌شدگان در آزمون‌های انتخاب‌شده (این فرآیند زمان‌بر است!)'
+        'ثبت نتایج نهایی آزمون (با توجه به نمره‌ی قبولی در آزمون)'
     get_student_info_csv.short_description = \
         'دریافت فایل اکسل اطلاعات دانش‌آموزان در آزمون انتخاب‌شده (فقط یک آزمون انتخاب شود!)'
-    actions = [set_exam_final_result, get_student_info_csv, set_exam_participants]
+    actions = [calculate_exam_final_result, get_student_info_csv, set_exam_participants, set_exam_final_result]
     list_display = ('id', 'title')
