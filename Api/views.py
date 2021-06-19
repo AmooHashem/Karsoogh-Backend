@@ -295,6 +295,7 @@ def pay_submit(request):
                     payment.student.status = 1
                 payment.student.expire_token = get_expire_time()
                 payment.student.save()
+                exam_student.save()
             except:
                 pay_status = json.loads(r.text).get('status')
                 if pay_status is None:
