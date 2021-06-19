@@ -7,8 +7,8 @@ class User(AbstractUser):
         Male = 'Male'
         Female = 'Female'
 
-    phone_number = models.CharField(max_length=15, blank=False, null=False, unique=True)
-    backup_phone_number = models.CharField(max_length=15, blank=False, null=False, unique=True)
+    phone_number = models.CharField(max_length=15, blank=False, null=False)
+    backup_phone_number = models.CharField(max_length=15, blank=False, null=False)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     bio = models.CharField(max_length=255, blank=True, null=True)
     gender = models.CharField(max_length=10, null=True, blank=True, choices=Gender.choices)
