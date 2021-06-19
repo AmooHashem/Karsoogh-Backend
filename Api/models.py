@@ -68,6 +68,7 @@ class Student(BaseFieldsModel):
 
 
 class Payment(BaseFieldsModel):
+    exam_id = models.IntegerField(null=True, blank=True)
     order_id = models.CharField(max_length=50, verbose_name='آی دی پرداخت')
     amount = models.IntegerField(verbose_name='مبلغ')
     name = models.CharField(max_length=255, verbose_name='نام پرداخت کننده')

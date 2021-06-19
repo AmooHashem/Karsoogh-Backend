@@ -169,7 +169,8 @@ def pay_request(request):
         while Payment.objects.filter(order_id=order_id).count() > 0:
             rand = random.randint(2, 10)
             order_id = str(Payment.objects.all().order_by('-pk')[0].pk + rand)
-        payment = Payment(student=student, order_id=order_id, amount=amount, name=name, phone=phone, mail=mail,
+        payment = Payment(exam_id=exam_id, student=student, order_id=order_id, amount=amount, name=name, phone=phone,
+                          mail=mail,
                           desc=desc, return_link=return_link, status=0)
         payment.save()
         payload = {
@@ -177,7 +178,6 @@ def pay_request(request):
             'amount': amount,
             'name': name,
             'phone': phone,
-            'exam_id': exam_id,
             'mail': mail,
             'desc': desc,
             # 'callback': 'http://127.0.0.1:8000/pay/submit/'.format(request.headers.get('host'))
@@ -250,10 +250,9 @@ def pay_submit(request):
         data = request.POST
         error_code = data.get('error_code')
         status = data.get('status')
-        exam_id = data.get('exam_id')
         payment = Payment.objects.filter(order_id=data.get('order_id')).first()
         token = payment.student.user_token
-
+        exam_id = payment.exam_id
         exam_student = ExamStudent.objects.filter(exam__id=exam_id, student=payment.student).first()
 
         pay_status = -1
