@@ -158,6 +158,7 @@ def pay_request(request):
         amount = int(data.get('amount'))
         return_link = data.get('return_link')
         mail = data.get('mail')
+        exam_id = data.get('exam_id')
         student = request.student
 
         name = student.first_name + ' ' + student.last_name if student.first_name else student.national_code
@@ -176,6 +177,7 @@ def pay_request(request):
             'amount': amount,
             'name': name,
             'phone': phone,
+            'exam_id': exam_id,
             'mail': mail,
             'desc': desc,
             # 'callback': 'http://127.0.0.1:8000/pay/submit/'.format(request.headers.get('host'))
@@ -248,9 +250,12 @@ def pay_submit(request):
         data = request.POST
         error_code = data.get('error_code')
         status = data.get('status')
+        exam_id = data.get('exam_id')
         payment = Payment.objects.filter(order_id=data.get('order_id')).first()
-
         token = payment.student.user_token
+
+        exam_student = ExamStudent.objects.filter(exam__id=exam_id, student=payment.student).first()
+
         pay_status = -1
         if payment.status == 0:
             payment.status = int(status)
@@ -283,7 +288,11 @@ def pay_submit(request):
                 payment.status = pay_status
                 payment.save()
 
-                payment.student.status = 10 if pay_status == 100 or pay_status == 101 else 1
+                if pay_status == 100 or pay_status == 101:
+                    exam_student.status = 1
+                    payment.student.status = 10
+                else:
+                    payment.student.status = 1
                 payment.student.expire_token = get_expire_time()
                 payment.student.save()
             except:
@@ -534,7 +543,6 @@ def set_score(request):
         student_answer.save()
         return get_response(62)
     return get_response(601)
-
 
 # class SetScore(APIView):
 #     parser_class = (MultiPartParser,)
