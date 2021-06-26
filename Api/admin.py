@@ -14,7 +14,6 @@ admin.site.register(City)
 admin.site.register(Question)
 admin.site.register(Content)
 admin.site.register(QuestionContent)
-admin.site.register(ExamStudent)
 
 
 class AnswersListFilterByNationalCode(admin.SimpleListFilter):
@@ -94,6 +93,41 @@ class AnswerAdmin(admin.ModelAdmin):
     list_filter = (AnswersListFilterByNationalCode,)
     download_csv.short_description = 'Export Selected as csv'
     actions = [download_csv]
+
+
+class ExamStudentListFilterByNationalCode(admin.SimpleListFilter):
+    title = 'Student National Code'
+    parameter_name = 'national_code'
+    default_value = None
+
+    def lookups(self, request, model_admin):
+        return [('123456789',
+                 'با کلیک بر روی این گزینه، جواب‌های دانش‌آموز با کد ملی ۱۲۳۴۵۶۷۸۹ نمایش داده میشه (که منطقاً خالیه!) حالا شما می‌تونید توی آدرس به جای ۱۲۳۴۵۶۷۸۹، هر کد ملی‌ای رو که می‌خواید، بذارید!')]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(student__national_code=self.value())
+        return queryset
+
+
+class ExamStudentListFilterByExamId(admin.SimpleListFilter):
+    title = 'Exam Id'
+    parameter_name = 'exam_id'
+    default_value = None
+
+    def lookups(self, request, model_admin):
+        filter_list = []
+        queryset = Exam.objects.all()
+        for exam in queryset:
+            filter_list.append(
+                (exam.id, exam.title)
+            )
+        return filter_list
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(exam__id=self.value())
+        return queryset
 
 
 @admin.register(Exam)
@@ -192,3 +226,9 @@ class ExamAdmin(admin.ModelAdmin):
         'دریافت فایل اکسل اطلاعات دانش‌آموزان در آزمون انتخاب‌شده (فقط یک آزمون انتخاب شود!)'
     actions = [calculate_exam_final_result, get_student_info_csv, set_exam_participants, set_exam_final_result]
     list_display = ('id', 'title')
+
+
+@admin.register(ExamStudent)
+class ExamStudentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'score')
+    list_filter = (ExamStudentListFilterByNationalCode, ExamStudentListFilterByExamId,)
