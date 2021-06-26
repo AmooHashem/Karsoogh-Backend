@@ -95,41 +95,6 @@ class AnswerAdmin(admin.ModelAdmin):
     actions = [download_csv]
 
 
-class ExamStudentListFilterByNationalCode(admin.SimpleListFilter):
-    title = 'Student National Code'
-    parameter_name = 'national_code'
-    default_value = None
-
-    def lookups(self, request, model_admin):
-        return [('123456789',
-                 'با کلیک بر روی این گزینه، جواب‌های دانش‌آموز با کد ملی ۱۲۳۴۵۶۷۸۹ نمایش داده میشه (که منطقاً خالیه!) حالا شما می‌تونید توی آدرس به جای ۱۲۳۴۵۶۷۸۹، هر کد ملی‌ای رو که می‌خواید، بذارید!')]
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(student__national_code=self.value())
-        return queryset
-
-
-class ExamStudentListFilterByExamId(admin.SimpleListFilter):
-    title = 'Exam Id'
-    parameter_name = 'exam_id'
-    default_value = None
-
-    def lookups(self, request, model_admin):
-        filter_list = []
-        queryset = Exam.objects.all()
-        for exam in queryset:
-            filter_list.append(
-                (exam.id, exam.title)
-            )
-        return filter_list
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(exam__id=self.value())
-        return queryset
-
-
 @admin.register(Exam)
 class ExamAdmin(admin.ModelAdmin):
     def set_exam_participants(self, request, queryset):
@@ -228,7 +193,61 @@ class ExamAdmin(admin.ModelAdmin):
     list_display = ('id', 'title')
 
 
+class ExamStudentListFilterById(admin.SimpleListFilter):
+    title = 'Student Id'
+    parameter_name = 'id'
+    default_value = None
+
+    def lookups(self, request, model_admin):
+        return [('123456789',
+                 'با کلیک بر روی این گزینه، امتحانات دانش‌آموز با آیدی ۱۲۳۴۵۶۷۸۹ نمایش داده میشه (که منطقاً خالیه!) حالا شما می‌تونید توی آدرس به جای ۱۲۳۴۵۶۷۸۹، هر آیدی‌ای رو که می‌خواید، بذارید!')]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(student__id=self.value())
+        return queryset
+
+
+class ExamStudentListFilterByExam(admin.SimpleListFilter):
+    title = 'Exam'
+    parameter_name = 'exam_id'
+    default_value = None
+
+    def lookups(self, request, model_admin):
+        filter_list = []
+        queryset = Exam.objects.all()
+        for exam in queryset:
+            filter_list.append(
+                (exam.id, exam.title)
+            )
+        return filter_list
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(exam__id=self.value())
+        return queryset
+
+
+class ExamStudentListFilterByStatus(admin.SimpleListFilter):
+    title = 'Status'
+    parameter_name = 'status'
+    default_value = None
+
+    def lookups(self, request, model_admin):
+        return [
+            ('0', 'مجاز به ثبت‌نام'),
+            ('1', 'ثبت‌نام شده'),
+            ('2', 'پذیرفته شده'),
+            ('3', 'پذیرفته نشده')
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(status=self.value())
+        return queryset
+
+
 @admin.register(ExamStudent)
 class ExamStudentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'student', 'score')
-    list_filter = (ExamStudentListFilterByNationalCode, ExamStudentListFilterByExamId,)
+    list_display = ('id', 'student', 'status', 'score')
+    list_filter = (ExamStudentListFilterById, ExamStudentListFilterByExam, ExamStudentListFilterByStatus)
