@@ -163,7 +163,7 @@ def pay_request(request):
         mail = data.get('mail')
         exam_id = data.get('exam_id')
         exam = Exam.objects.filter(id=exam_id).first()
-        amount = exam.cost
+        amount = int(exam.cost)
 
         student = request.student
 
