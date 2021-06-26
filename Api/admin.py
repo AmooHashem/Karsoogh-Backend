@@ -158,9 +158,9 @@ class ExamAdmin(admin.ModelAdmin):
 
         file = open('students.csv', 'w')
         writer = csv.writer(file)
-        first_row = ['شناسه', 'کد ملی', 'نام', 'نام خانوادگی', 'شماره تلفن', 'شماره تلفن زاپاس', 'پایه', 'مدرسه',
-                     'شماره تلفن مدرسه', 'شهر', 'استان', 'نام مدیر', 'شماره تلفن مدیر', 'وضعیت', 'تعداد پاسخ ارسال‌شده',
-                     'نمره']
+        first_row = ['شناسه', 'کد ملی', 'نام', 'نام خانوادگی', 'جنسیت', 'ایمیل', 'شماره تلفن', 'شماره تلفن زاپاس',
+                     'پایه', 'مدرسه', 'شماره تلفن مدرسه', 'شهر', 'استان', 'نام مدیر', 'شماره تلفن مدیر', 'وضعیت',
+                     'تعداد پاسخ ارسال‌شده', 'نمره']
         writer.writerow(first_row)
 
         for selected_exam_student in selected_exam_students:
@@ -169,9 +169,10 @@ class ExamAdmin(admin.ModelAdmin):
             for answer in answers_of_selected_exam:
                 if answer.student == student:
                     submitted_answers_count += 1
-            row = [student.id, student.national_code, student.first_name, student.last_name, student.phone1,
-                   student.phone2, student.grade, student.school_name, student.school_phone,
-                   student.city.title if student.city else '', student.city.province.title if student.city else '',
+            row = [student.id, student.national_code, student.first_name, student.last_name, student.gender,
+                   student.email, student.phone1, student.phone2, student.grade, student.school_name,
+                   student.school_phone, student.city.title if student.city else '',
+                   student.city.province.title if student.city else '',
                    student.manager_name, student.manager_phone, STUDENT_EXAM_STATUS[selected_exam_student.status][1],
                    submitted_answers_count, selected_exam_student.score]
             writer.writerow(row)

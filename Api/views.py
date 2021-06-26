@@ -63,6 +63,8 @@ def register_complete(request):
             phone2 = post_data.get('phone2')
             first_name = post_data.get('first_name')
             last_name = post_data.get('last_name')
+            gender = post_data.get('gender')
+            email = post_data.get('email')
             school_name = post_data.get('school_name')
             school_phone = post_data.get('school_phone')
             manager_name = post_data.get('manager_name')
@@ -73,6 +75,8 @@ def register_complete(request):
             request.student.phone2 = phone2
             request.student.first_name = first_name
             request.student.last_name = last_name
+            request.student.gender = gender
+            request.student.email = email
             request.student.school_name = school_name
             request.student.school_phone = school_phone
             request.student.manager_name = manager_name

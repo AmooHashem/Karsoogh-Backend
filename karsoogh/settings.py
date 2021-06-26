@@ -206,8 +206,8 @@ GRADE = (
 )
 
 GENDER = (
-    ('MAN', 'مرد'),
-    ('WOMAN', 'زن'),
+    ('MAN', 'پسر'),
+    ('WOMAN', 'دختر'),
 )
 
 CONTENT_TYPE = (
