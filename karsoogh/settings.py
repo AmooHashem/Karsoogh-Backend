@@ -192,7 +192,7 @@ MEDIA_ROOT = rel('media')
 MEDIA_URL = '/media/'
 
 # payment properties:
-API_TOKEN = 'ce1234b6-b2a9-48e4-8cd1-3ffbe60007da'
+API_TOKEN = '19e8961b-ad5a-4a65-807a-087c777f6e1b'
 SANDBOX = '0'
 
 GRADE = (
