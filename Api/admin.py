@@ -132,7 +132,6 @@ class ExamAdmin(admin.ModelAdmin):
                 exam_student.score = exam_student.score + score
                 exam_student.save()
 
-            # todo: redundant
             for exam_student in ExamStudent.objects.filter(exam=selected_exam):
                 exam_student.status = 1
                 exam_student.save()

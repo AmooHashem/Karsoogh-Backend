@@ -159,10 +159,12 @@ def logout(request):
 def pay_request(request):
     if request.method == "POST":
         data = request.POST
-        amount = int(data.get('amount'))
         return_link = data.get('return_link')
         mail = data.get('mail')
         exam_id = data.get('exam_id')
+        exam = Exam.objects.filter(id=exam_id).first()
+        amount = int(exam.cost)
+
         student = request.student
 
         name = student.first_name + ' ' + student.last_name if student.first_name else student.national_code
@@ -184,7 +186,7 @@ def pay_request(request):
             'phone': phone,
             'mail': mail,
             'desc': desc,
-            # 'callback': 'http://127.0.0.1:8000/pay/submit/'.format(request.headers.get('host'))
+            # 'callback': 'http://127.0.0.1:8000/pay/submit/'
             'callback': 'https://{}/pay/submit/'.format(request.headers.get('host'))
         }
         headers = {
