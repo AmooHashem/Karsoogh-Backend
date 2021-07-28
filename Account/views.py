@@ -42,8 +42,9 @@ class ChangePassWordAPI(generics.UpdateAPIView):
         return self.request.user
 
     
-    def update(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         self.object = get_object()
+        self.object = self.request.user
         serializer = self.get_serializer(data = request.data)
 
         if serializer.is_valid():
@@ -52,13 +53,6 @@ class ChangePassWordAPI(generics.UpdateAPIView):
 
             self.object.set_password(serializer.data.get("new_pass"))
             self.object.save()
-            response = {
-                'status': 'success',
-                'code': status.HTTP_200_OK,
-                'message': 'Password updated successfully',
-                'data': []
-            }
-
-            return Response(response)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

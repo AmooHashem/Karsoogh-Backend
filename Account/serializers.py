@@ -25,6 +25,9 @@ class StudentSerializer(serializers.ModelSerializer):
 class ChangePassWordSerializer(serializers.Serializer):
     model = User
 
-    old_pass = serializers.CharField(max_length=250)
-    new_pass = serializers.CharField(max_length=250)
+    old_pass = serializers.CharField(max_length=250, required=True)
+    new_pass = serializers.CharField(max_length=250, required=True)
 
+    def validated_password(self, value):
+        validated_password(value)
+        return value
