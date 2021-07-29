@@ -33,7 +33,7 @@ class CreateUserAPI(generics.ListCreateAPIView):
     #     return Response({"user": serializer.data})
 
 
-class ChangePassWordAPI(generics.UpdateAPIView):
+class ChangePasswordAPI(generics.UpdateAPIView):
     serializer_class = ChangePassWordSerializer
     model = User
     permission_classes = [IsAuthenticated]
