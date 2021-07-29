@@ -12,7 +12,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = User.objects.create( **validated_data)
+        user = User.objects.create(**validated_data)
         user.set_password(validated_data['password'])
         user.save()
         return user
@@ -22,11 +22,11 @@ class StudentSerializer(serializers.ModelSerializer):
     pass
 
 
-class ChangePassWordSerializer(serializers.Serializer):
+class ChangePasswordSerializer(serializers.Serializer):
     model = User
 
-    old_pass = serializers.CharField(max_length=250, required=True)
-    new_pass = serializers.CharField(max_length=250, required=True)
+    old_password = serializers.CharField(max_length=250, required=True)
+    new_password = serializers.CharField(max_length=250, required=True)
 
     def validated_password(self, value):
         validated_password(value)

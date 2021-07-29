@@ -7,5 +7,5 @@ from karsoogh import settings
 urlpatterns = \
     [
         path('admin/', admin.site.urls),
-        path('account/', include('Account.urls')),
+        path('api/', include('Account.urls')),
     ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
