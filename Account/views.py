@@ -54,3 +54,19 @@ class ChangePasswordAPI(generics.UpdateAPIView):
             return Response({"msg": 1}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class ResetPasswordAPI(APIView):
+    
+    def post(self,request):
+        serializer=ResetPasswordSerializer(data=request.data)
+        alldatas={}
+        if serializer.is_valid(raise_exception=True):
+            mname=serializer.save()
+            alldatas['data']='successfully registered'
+            print(alldatas)
+            return Response(alldatas)
+        
+        return Response('failed retry after some time')

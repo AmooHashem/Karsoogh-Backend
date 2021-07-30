@@ -31,3 +31,28 @@ class ChangePasswordSerializer(serializers.Serializer):
     def validated_password(self, value):
         validated_password(value)
         return value
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    national_code = serializers.CharField(max_length=10)
+    phone_number = serializers.CharField(max_length=15)
+    new_password = serializers.CharField(max_length=100)
+
+
+    class Meta:
+        model = User
+        fields = ['national_code', 'phone_number', 'new_password']
+
+
+    def save(self):
+        national_code = self.validated_data['national_code']
+        phone_number = self.validated_data['phone_number']
+        new_password = self.validated_data['new_password']
+
+        if User.objects.filter(national_code=national_code).exists():
+             user=User.objects.get(national_code=national_code)
+             user.set_password(new_password)
+             user.save()
+             return user
+        else:
+            raise serializers.ValidationError({'error':'please enter valid crendentials'})
