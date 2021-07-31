@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from Game.models import Game, Player, Problem, ConsecutiveProblems, Answer, Transaction
+
+admin.site.register(Game)
+admin.site.register(Player)
+admin.site.register(Problem)
+admin.site.register(ConsecutiveProblems)
+admin.site.register(Answer)
+admin.site.register(Transaction)

@@ -56,17 +56,15 @@ class ChangePasswordAPI(generics.UpdateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 class ResetPasswordAPI(APIView):
-    
-    def post(self,request):
-        serializer=ResetPasswordSerializer(data=request.data)
-        alldatas={}
+
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        alldatas = {}
         if serializer.is_valid(raise_exception=True):
-            mname=serializer.save()
-            alldatas['message']='رمز با موفقیت تغییر پیدا کرد'
+            mname = serializer.save()
+            alldatas['message'] = 'رمز با موفقیت تغییر پیدا کرد'
             print(alldatas)
             return Response(alldatas)
-        
+
         return Response('خطا، لطفا دوباره تلاش کنید')
