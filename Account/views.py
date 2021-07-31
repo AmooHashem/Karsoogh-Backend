@@ -65,8 +65,8 @@ class ResetPasswordAPI(APIView):
         alldatas={}
         if serializer.is_valid(raise_exception=True):
             mname=serializer.save()
-            alldatas['data']='successfully registered'
+            alldatas['message']='رمز با موفقیت تغییر پیدا کرد'
             print(alldatas)
             return Response(alldatas)
         
-        return Response('failed retry after some time')
+        return Response('خطا، لطفا دوباره تلاش کنید')
