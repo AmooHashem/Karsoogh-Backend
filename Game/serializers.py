@@ -9,9 +9,11 @@ class SubjectSerializer(serializers.ModelSerializer):
 
 
 class ProblemInfoSerializer(serializers.ModelSerializer):
+    subject = SubjectSerializer()
+
     class Meta:
         model = Problem
-        fields = ['title', 'subject', 'difficulty', ]
+        fields = ['id', 'title', 'subject', 'difficulty', ]
 
 
 class PlayerProblemSerializer(serializers.ModelSerializer):

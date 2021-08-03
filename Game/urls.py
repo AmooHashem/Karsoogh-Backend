@@ -5,6 +5,7 @@ from .views import *
 app_name = 'Account'
 
 urlpatterns = [
-    path('player/problem/', PlayerProblemView.as_view(), name='salam'),
-    path('problem/subject/', SubjectView.as_view(), name='salam'),
+    path('player/problem/', PlayerProblemView.as_view(), name='player problems'),
+    path('subject/', SubjectView.as_view(), name='subjects'),
+    path('problem/', SubjectView.as_view(), name='one problem'),
 ]

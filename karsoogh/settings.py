@@ -26,54 +26,9 @@ SECRET_KEY = '3s%v6jaceszv$rabw)fj85+_alf^+v8ryanaf2qa&^n1)-3+x&'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:80',
-    'http://localhost:3000',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'https://interkarsolar.ir',
-    'http://185.239.105.157:8000',
-]
-
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
-
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'accept-language',
-    'cache-control',
-    'authorization',
-    'content-type',
-    'content-length',
-    'dnt',
-    'origin',
-    'pragma',
-    'referer',
-    'sec-ch-ua',
-    'sec-ch-ua-mobile',
-    'sec-fetch-dest',
-    'sec-fetch-mode',
-    'sec-fetch-site',
-    'sec-fetch-user',
-    'upgrade-insecure-requests',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-    'x-www-form-urlencoded',
-    'token',
-    'city',
-    'province',
-]
-
-RESPONSE_TEMPLATE = '{{ "res_code": {}, "message": "{}", "data": {} }}'
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_METHODS = ['*']
+CORS_ALLOW_HEADERS = ['*']
 
 # Application definition
 
