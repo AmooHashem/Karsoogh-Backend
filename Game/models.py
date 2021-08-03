@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.safestring import mark_safe
 from jsonfield import JSONField
 
 from Account.models import User
@@ -22,27 +23,48 @@ class Player(models.Model):
         return f'{self.user} | {self.game.title}'
 
 
+class Subject(models.Model):
+    title = models.CharField(max_length=30, verbose_name='عنوان')
+
+    def __str__(self):
+        return f'{self.title}'
+
+
 class Problem(models.Model):
-    class Level(models.TextChoices):
+    class Difficulty(models.TextChoices):
         EASY = 'EASY'
         MEDIUM = 'MEDIUM'
         HARD = 'HARD'
 
-    games = models.ManyToManyField(Game, verbose_name='بازی‌(ها)')
     title = models.CharField(max_length=100, verbose_name='عنوان')
+    games = models.ManyToManyField(Game, verbose_name='بازی‌(ها)')
+    subject = models.ForeignKey(to=Subject, on_delete=models.PROTECT, blank=True, null=True)
+    difficulty = models.CharField(max_length=20, choices=Difficulty.choices, verbose_name='درجه سختی',
+                                  default=Difficulty.MEDIUM)
     text = models.TextField(verbose_name='متن')
     short_answer = models.CharField(max_length=100, null=True, blank=True, verbose_name='پاسخ کوتاه (اختیاری)')
-    level = models.CharField(max_length=10, choices=Level.choices, verbose_name='سطح')
+
+    def __str__(self):
+        return f'{self.title}'
+
+
+class PlayerProblem(models.Model):
+    class Status(models.Choices):
+        RECEIVED = 'RECEIVED'
+        DELIVERED = 'DELIVERED'
+        SCORED = 'SCORED'
+
+    problem = models.ForeignKey(Problem, on_delete=models.PROTECT, verbose_name='مسئله')
+    player = models.ForeignKey(Player, on_delete=models.PROTECT, verbose_name='بازیکن')
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.RECEIVED)
+    mark = models.IntegerField(default=-1, verbose_name='نمره')
+    text_answer = models.TextField(verbose_name='متن پاسخ')
+    file_answer = models.FileField(upload_to='game-answers/', blank=True, null=True)
 
 
 class ConsecutiveProblems(models.Model):
     problems = models.ManyToManyField(Problem, verbose_name='مسئله‌ها')
     hint_count = models.IntegerField(default=0)
-
-
-class Answer(models.Model):
-    mark = models.IntegerField(default=-1, verbose_name='نمره')
-    problem = models.ForeignKey(Problem, on_delete=models.PROTECT, verbose_name='مسئله')
 
 
 class Transaction(models.Model):

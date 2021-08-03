@@ -38,11 +38,9 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
     phone_number = serializers.CharField(max_length=15)
     new_password = serializers.CharField(max_length=100)
 
-
     class Meta:
         model = User
         fields = ['national_code', 'phone_number', 'new_password']
-
 
     def save(self):
         national_code = self.validated_data['national_code']
@@ -50,9 +48,9 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         new_password = self.validated_data['new_password']
 
         if User.objects.filter(national_code=national_code).exists():
-             user=User.objects.get(national_code=national_code)
-             user.set_password(new_password)
-             user.save()
-             return user
+            user = User.objects.get(national_code=national_code)
+            user.set_password(new_password)
+            user.save()
+            return user
         else:
-            raise serializers.ValidationError({'error':'please enter valid crendentials'})
+            raise serializers.ValidationError({'error': 'please enter valid crendentials'})

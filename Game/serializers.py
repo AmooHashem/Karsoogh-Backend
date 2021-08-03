@@ -2,14 +2,21 @@ from rest_framework import serializers
 from .models import *
 
 
-class CreateProblem(serializers.ModelSerializer):
+class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ('id', 'username', 'phone_number', 'password')
-        extra_kwargs = {'password': {'write_only': True}}
+        model = Subject
+        fields = ['id', 'title']
 
-    def create(self, validated_data):
-        user = User.objects.create(**validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+
+class ProblemInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Problem
+        fields = ['title', 'subject', 'difficulty', ]
+
+
+class PlayerProblemSerializer(serializers.ModelSerializer):
+    problem = ProblemInfoSerializer()
+
+    class Meta:
+        model = PlayerProblem
+        fields = ['id', 'status', 'mark', 'problem']
