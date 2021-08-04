@@ -14,15 +14,6 @@ class Game(models.Model):
         return self.title
 
 
-class Player(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.PROTECT, verbose_name='کاربر')
-    game = models.ForeignKey(to=Game, on_delete=models.PROTECT, verbose_name='بازی')
-    score = models.IntegerField(default=0, verbose_name='امتیاز')
-
-    def __str__(self):
-        return f'{self.user} | {self.game.title}'
-
-
 class Subject(models.Model):
     title = models.CharField(max_length=30, verbose_name='عنوان')
     game = models.ManyToManyField(Game, verbose_name='آزمون', blank=True)
@@ -62,6 +53,15 @@ class MultipleProblem(models.Model):
     maximum_hint_count = models.IntegerField(default=0, verbose_name='حداکثر تعداد راهنمایی')
 
 
+class Player(models.Model):
+    user = models.ForeignKey(to=User, on_delete=models.PROTECT, verbose_name='کاربر')
+    game = models.ForeignKey(to=Game, on_delete=models.PROTECT, verbose_name='بازی')
+    score = models.IntegerField(default=0, verbose_name='امتیاز')
+
+    def __str__(self):
+        return f'{self.user} | {self.game.title}'
+
+
 # abstract
 class PlayerProblem(models.Model):
     class Status(models.Choices):
@@ -82,7 +82,8 @@ class PlayerSingleProblem(PlayerProblem):
 
 
 class PlayerMultipleProblem(PlayerProblem):
-    multipleProblem = models.ForeignKey(MultipleProblem, on_delete=models.PROTECT, blank=True)
+    multiple_problem = models.ForeignKey(MultipleProblem, on_delete=models.PROTECT, blank=True)
+    step = models.IntegerField(default=0, verbose_name='تعداد سوالات حل‌شده تا اینجا')
 
 
 class Hint(models.Model):

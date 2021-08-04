@@ -11,8 +11,13 @@ class SubjectSerializer(serializers.ModelSerializer):
 class ProblemDetailedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Problem
+        exclude = ['answer', 'games']
+
+
+class MultipleProblemDetailedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MultipleProblem
         fields = '__all__'
-        exclude = ['short_answer', 'games']
 
 
 class ProblemInfoSerializer(serializers.ModelSerializer):
@@ -24,21 +29,14 @@ class ProblemInfoSerializer(serializers.ModelSerializer):
 
 
 class MultipleProblemInfoSerializer(serializers.ModelSerializer):
-    difficulty = serializers.SerializerMethodField()
-    problems_ids = serializers.SerializerMethodField()
+    problems_count = serializers.SerializerMethodField()
 
     class Meta:
         model = MultipleProblem
-        fields = ['id', 'title', 'difficulty', 'problems_ids']
+        fields = ['id', 'title', 'problems_count']
 
-    def get_difficulty(self, obj):
+    def get_problems_count(self, obj):
         return obj.problems.count()
-
-    def get_problems_ids(self, obj):
-        result = []
-        for problem in obj.problems.all():
-            result.append(problem.id)
-        return result
 
 
 class SingleProblemSerializer(serializers.ModelSerializer):
