@@ -14,10 +14,26 @@ class ProblemDetailedSerializer(serializers.ModelSerializer):
         exclude = ['answer', 'games']
 
 
+class PlayerSingleProblemDetailedSerializer(serializers.ModelSerializer):
+    problem = ProblemDetailedSerializer()
+
+    class Meta:
+        model = PlayerSingleProblem
+        fields = '__all__'
+
+
 class MultipleProblemDetailedSerializer(serializers.ModelSerializer):
     class Meta:
         model = MultipleProblem
         fields = '__all__'
+
+
+# class PlayerMultipleProblemDetailedSerializer(serializers.ModelSerializer):
+#     multiple_problem = MultipleProblemDetailedSerializer()
+#
+#     class Meta:
+#         model = PlayerMultipleProblem
+#         fields = '__all__'
 
 
 class ProblemInfoSerializer(serializers.ModelSerializer):
