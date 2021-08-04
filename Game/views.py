@@ -23,8 +23,7 @@ class SingleProblemView(generics.GenericAPIView):
     serializer_class = SingleProblemSerializer
     queryset = PlayerSingleProblem.objects.all()
 
-    def post(self, request):
-        game_id = request.data['game_id']
+    def get(self, request, game_id):
         user = request.user
         query_set = self.get_queryset().filter(player__user=user, game__id=game_id)
         serializer = self.get_serializer(data=query_set, many=True)
@@ -37,8 +36,7 @@ class MultipleProblemView(generics.GenericAPIView):
     serializer_class = MultipleProblemSerializer
     queryset = PlayerMultipleProblem.objects.all()
 
-    def post(self, request):
-        game_id = request.data['game_id']
+    def get(self, request, game_id):
         user = request.user
         query_set = self.get_queryset().filter(player__user=user, game__id=game_id)
         serializer = self.get_serializer(data=query_set, many=True)
