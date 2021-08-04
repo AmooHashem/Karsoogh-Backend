@@ -1,11 +1,12 @@
 from django.urls import path
-from rest_framework_simplejwt import views as jwt_views
 from .views import *
 
 app_name = 'Account'
 
 urlpatterns = [
-    path('player/problem/', PlayerProblemView.as_view(), name='player problems'),
     path('subject/', SubjectView.as_view(), name='subjects'),
-    path('problem/', SubjectView.as_view(), name='one problem'),
+    path('problem/single/', SingleProblemView.as_view(), name='one problem'),
+    path('problem/multiple/', MultipleProblemView.as_view(), name='one problem'),
+    path('problem/single/random/', GetRandomSingleProblem.as_view(), name='one problem'),
+    path('problem/multiple/random/', GetRandomMultipleProblem.as_view(), name='one problem'),
 ]

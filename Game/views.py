@@ -2,34 +2,58 @@ from rest_framework import generics, status
 from rest_framework import permissions
 from rest_framework.response import Response
 
-from Game.models import PlayerProblem, Subject
-from Game.serializers import PlayerProblemSerializer, SubjectSerializer
+from Game.models import Subject, PlayerSingleProblem, PlayerMultipleProblem
+from Game.serializers import SingleProblemSerializer, SubjectSerializer, MultipleProblemSerializer
 
 
-class PlayerProblemView(generics.GenericAPIView):
+class SubjectView(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = SubjectSerializer
+
+    def post(self, request):
+        game_id = request.data['game_id']
+        queryset = Subject.objects.filter(game__id=game_id)
+        serializer = self.get_serializer(data=queryset, many=True)
+        serializer.is_valid()
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+class SingleProblemView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = PlayerProblemSerializer
+    serializer_class = SingleProblemSerializer
+    queryset = PlayerSingleProblem.objects.all()
 
-    def get(self, request):
+    def post(self, request):
+        game_id = request.data['game_id']
         user = request.user
-        query_set = PlayerProblem.objects.filter(player__user=user)
+        query_set = self.get_queryset().filter(player__user=user, game__id=game_id)
         serializer = self.get_serializer(data=query_set, many=True)
         serializer.is_valid()
         return Response(serializer.data, status.HTTP_200_OK)
 
 
-class SubjectView(generics.GenericAPIView):
-    queryset = Subject.objects.all()
-    permission_classes = (permissions.AllowAny,)
-    serializer_class = SubjectSerializer
+class MultipleProblemView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = MultipleProblemSerializer
+    queryset = PlayerMultipleProblem.objects.all()
 
-    def get(self, request):
-        serializer = self.get_serializer(data=self.get_queryset(), many=True)
+    def post(self, request):
+        game_id = request.data['game_id']
+        user = request.user
+        query_set = self.get_queryset().filter(player__user=user, game__id=game_id)
+        serializer = self.get_serializer(data=query_set, many=True)
         serializer.is_valid()
         return Response(serializer.data, status.HTTP_200_OK)
 
 
-class GetRandomProblem(generics.GenericAPIView):
-    queryset = Subject.objects.all()
-    permission_classes = (permissions.AllowAny,)
+class GetRandomSingleProblem(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = SubjectSerializer
+
+    def post(self, request):
+        user = request.user
+
+
+class GetRandomMultipleProblem(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = SubjectSerializer
