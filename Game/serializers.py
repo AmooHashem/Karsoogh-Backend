@@ -64,8 +64,8 @@ class SingleProblemSerializer(serializers.ModelSerializer):
 
 
 class MultipleProblemSerializer(serializers.ModelSerializer):
-    multipleProblem = MultipleProblemInfoSerializer()
+    multiple_problem = MultipleProblemInfoSerializer()
 
     class Meta:
         model = PlayerMultipleProblem
-        fields = ['id', 'status', 'mark', 'multipleProblem']
+        fields = ['id', 'status', 'mark', 'step', 'multiple_problem']

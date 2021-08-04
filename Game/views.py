@@ -15,8 +15,7 @@ class SubjectView(generics.GenericAPIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = SubjectSerializer
 
-    def post(self, request):
-        game_id = request.data['game_id']
+    def get(self, request, game_id):
         queryset = Subject.objects.filter(game__id=game_id)
         serializer = self.get_serializer(data=queryset, many=True)
         serializer.is_valid()
@@ -53,11 +52,21 @@ class PlayerMultipleProblemView(generics.GenericAPIView):
         if player_multiple_problem_query_set.count() == 0:
             return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
         player_multiple_problem = player_multiple_problem_query_set.first()
-        print(player_multiple_problem.multiple_problem.problems)
-        print(player_multiple_problem.multiple_problem.problems.all())
         single_problem = player_multiple_problem.multiple_problem.problems.all()[player_multiple_problem.step]
         single_problem_serializer = self.get_serializer(single_problem)
         return Response(single_problem_serializer.data, status.HTTP_200_OK)
+
+    def post(self, request, game_id, multiple_problem_id):
+        answer = request.data.answer
+        user = request.user
+        player = Player.objects.get(game__id=game_id, user=user)
+        player_multiple_problem_query_set = self.get_queryset() \
+            .filter(player=player, multiple_problem_id=multiple_problem_id)
+        if player_multiple_problem_query_set.count() == 0:
+            return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
+        player_multiple_problem = player_multiple_problem_query_set.first()
+        single_problem = player_multiple_problem.multiple_problem.problems.all()[player_multiple_problem.step]
+        # single_problem  |||| answer
 
 
 class SingleProblemView(generics.GenericAPIView):
@@ -67,7 +76,7 @@ class SingleProblemView(generics.GenericAPIView):
 
     def get(self, request, game_id):
         user = request.user
-        player = Player.objects.filter(game__id=game_id, user=user)
+        player = Player.objects.get(game__id=game_id, user=user)
         query_set = self.get_queryset().filter(player=player)
         serializer = self.get_serializer(data=query_set, many=True)
         serializer.is_valid()
@@ -82,7 +91,7 @@ class SingleProblemView(generics.GenericAPIView):
         subject = Subject.objects.get(id=subject_id)
         player = Player.objects.get(game__id=game_id, user=user)
         player_single_problems = self.get_queryset().filter(player=player).values_list('problem', flat=True)
-        available_problems = Problem.objects.filter(subject=subject, difficulty=difficulty) \
+        available_problems = Problem.objects.filter(subject=subject, difficulty=difficulty, type='DESCRIPTIVE') \
             .exclude(id__in=player_single_problems.all())
         if available_problems.count() == 0:
             return Response({"message": "شما تمام سوالات این بخش را گرفته‌اید!"}, status.HTTP_404_NOT_FOUND)
@@ -104,7 +113,8 @@ class MultipleProblemView(generics.GenericAPIView):
 
     def get(self, request, game_id):
         user = request.user
-        query_set = self.get_queryset().filter(player__user=user, game__id=game_id)
+        player = Player.objects.get(game__id=game_id, user=user)
+        query_set = self.get_queryset().filter(player=player)
         serializer = self.get_serializer(data=query_set, many=True)
         serializer.is_valid()
         return Response(serializer.data, status.HTTP_200_OK)
