@@ -1,4 +1,3 @@
-import json
 from random import choice
 
 from rest_framework import generics, status
@@ -8,7 +7,7 @@ from rest_framework.response import Response
 from Game.models import Subject, PlayerSingleProblem, PlayerMultipleProblem, Player, Problem, MultipleProblem, Game, \
     Transaction
 from Game.serializers import SingleProblemSerializer, SubjectSerializer, MultipleProblemSerializer, \
-    ProblemDetailedSerializer, MultipleProblemDetailedSerializer, PlayerSingleProblemDetailedSerializer
+    ProblemDetailedSerializer, PlayerSingleProblemDetailedSerializer
 
 
 class SubjectView(generics.GenericAPIView):
@@ -91,6 +90,8 @@ class SingleProblemView(generics.GenericAPIView):
         subject = Subject.objects.get(id=subject_id)
         player = Player.objects.get(game__id=game_id, user=user)
         player_single_problems = self.get_queryset().filter(player=player).values_list('problem', flat=True)
+        print(player_single_problems, difficulty)
+
         available_problems = Problem.objects.filter(subject=subject, difficulty=difficulty, type='DESCRIPTIVE') \
             .exclude(id__in=player_single_problems.all())
         if available_problems.count() == 0:
