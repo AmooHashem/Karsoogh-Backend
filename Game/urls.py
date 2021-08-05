@@ -12,4 +12,3 @@ urlpatterns = [
     path('<int:game_id>/problem/multiple/<int:problem_id>/',
          PlayerMultipleProblemView.as_view(), name='one problem'),
 ]
-
