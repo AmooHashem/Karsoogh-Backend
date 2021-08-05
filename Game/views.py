@@ -78,12 +78,13 @@ class PlayerMultipleProblemView(generics.GenericAPIView):
     def get(self, request, game_id, problem_id):
         user = request.user
         player = Player.objects.get(game__id=game_id, user=user)
-        player_multiple_problem_query_set = self.get_queryset() \
-            .filter(player=player, id=problem_id)
-        if player_multiple_problem_query_set.count() == 0:
+        player_multiple_problem = self.get_queryset() \
+            .filter(player=player, id=problem_id).first()
+        if player_multiple_problem is None:
             return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
-        player_multiple_problem = player_multiple_problem_query_set.first()
-        multiple_problem = player_multiple_problem.multiple_problem.problems.all()[player_multiple_problem.step]
+
+        multiple_problem = player_multiple_problem.multiple_problem.problems \
+            .order_by('relative_order').all()[player_multiple_problem.step]
         multiple_problem_serializer = self.get_serializer(multiple_problem)
         return Response({
             "step": player_multiple_problem.step,
@@ -100,7 +101,8 @@ class PlayerMultipleProblemView(generics.GenericAPIView):
         if player_multiple_problem is None:
             return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
 
-        multiple_problem_problems = player_multiple_problem.multiple_problem.problems.all()
+        multiple_problem_problems = player_multiple_problem.multiple_problem.problems \
+            .order_by('relative_order').all()
         answered_problem = multiple_problem_problems[player_multiple_problem.step]
         if answered_problem.answer == answer:
             player_multiple_problem.step += 1

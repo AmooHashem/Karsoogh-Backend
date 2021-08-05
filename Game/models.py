@@ -44,6 +44,7 @@ class Problem(models.Model):
     reward = models.IntegerField(default=0, verbose_name='پاداش حل‌کردن')
     text = models.TextField(verbose_name='متن')
     answer = models.TextField(null=True, blank=True, verbose_name='پاسخ (اختیاری)')
+    relative_order = models.IntegerField(default=0, verbose_name='ترتیب نسبی')
 
     def __str__(self):
         return f'{self.title}'
