@@ -32,6 +32,7 @@ class SubjectView(generics.GenericAPIView):
         return Response(serializer.data, status.HTTP_200_OK)
 
 
+# related to one problem
 class PlayerSingleProblemView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = PlayerSingleProblemDetailedSerializer
@@ -49,7 +50,23 @@ class PlayerSingleProblemView(generics.GenericAPIView):
         return Response(player_single_problem_serializer.data, status.HTTP_200_OK)
 
     def post(self, request, game_id, problem_id):
-        pass
+        print("@@@@@@@@@@@@@@@@@@@")
+        print(request.data)
+        answer = request.data['answer']
+        user = request.user
+        player = Player.objects.get(game__id=game_id, user=user)
+        print(player)
+        player_single_problem = self.get_queryset() \
+            .filter(player=player, id=problem_id, status='RECEIVED').first()
+        print(player_single_problem)
+        if player_single_problem is None:
+            return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
+
+        # todo: add file
+        player_single_problem.text_answer = answer
+        player_single_problem.status = 'DELIVERED'
+        player_single_problem.save()
+        return Response({"message": "پاسخ شما با موفقیت ثبت شد!"}, status.HTTP_200_OK)
 
 
 # related to one problem
@@ -68,14 +85,18 @@ class PlayerMultipleProblemView(generics.GenericAPIView):
         player_multiple_problem = player_multiple_problem_query_set.first()
         multiple_problem = player_multiple_problem.multiple_problem.problems.all()[player_multiple_problem.step]
         multiple_problem_serializer = self.get_serializer(multiple_problem)
-        return Response(multiple_problem_serializer.data, status.HTTP_200_OK)
+        return Response({
+            "step": player_multiple_problem.step,
+            "total_steps": player_multiple_problem.multiple_problem.problems.all().count(),
+            "problem": multiple_problem_serializer.data
+        }, status.HTTP_200_OK)
 
     def post(self, request, game_id, problem_id):
         answer = request.data['answer']
         user = request.user
         player = Player.objects.get(game__id=game_id, user=user)
         player_multiple_problem = self.get_queryset() \
-            .filter(player=player, id=problem_id).first()
+            .filter(player=player, id=problem_id, status='RECEIVED').first()
         if player_multiple_problem is None:
             return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
 
@@ -85,6 +106,9 @@ class PlayerMultipleProblemView(generics.GenericAPIView):
             player_multiple_problem.step += 1
             player_multiple_problem.save()
             if player_multiple_problem.step == multiple_problem_problems.count():
+                player_multiple_problem.status = 'SCORED'
+                player_multiple_problem.mark = player_multiple_problem.multiple_problem.score
+                player_multiple_problem.save()
                 make_transaction(player, f"حل‌کردن مسئله‌ی {answered_problem.title}", answered_problem.reward)
                 return Response({"message": "شما این مسئله‌ی دنباله‌دار را با موفقیت حل کردید!"}, status.HTTP_200_OK)
             else:
@@ -111,6 +135,7 @@ class SingleProblemView(generics.GenericAPIView):
         print(request.data)
         user, difficulty = request.user, request.data['difficulty']
 
+        # todo:
         # if subject_id is None or difficulty is None:
         #     return Response({"message": "لطفاً تمام مشخصات خواسته‌شده را وارد کنید!"}, status.HTTP_404_NOT_FOUND)
         # subject = Subject.objects.get(id=subject_id)
@@ -122,7 +147,8 @@ class SingleProblemView(generics.GenericAPIView):
         game = Game.objects.get(id=game_id)
         if received_problems_count >= game.maximum_number_of_received_problem:
             return Response({
-                "message": f"شما نمی‌توانید در یک لحظه بیش از {game.maximum_number_of_received_problem} سوال گرفته‌شده داشته باشید!"},
+                "message": f"شما نمی‌توانید در یک لحظه بیش از {game.maximum_number_of_received_problem} سوال گرفته‌شده "
+                           f" داشته باشید!"},
                 status.HTTP_400_BAD_REQUEST)
 
         player_single_problems = self.get_queryset().filter(player=player).values_list('problem', flat=True)
@@ -164,7 +190,7 @@ class MultipleProblemView(generics.GenericAPIView):
         game = Game.objects.get(id=game_id)
         if received_problems_count >= game.maximum_number_of_received_problem:
             return Response({
-                "message": f"شما نمی‌توانید در یک لحظه بیش از {game.maximum_number_of_received_problem} سوال داشته باشید!"},
+                "message": f"شما نمی‌توانید در یک لحظه بیش از {game.maximum_number_of_received_problem} سوال گرفته‌شده داشته باشید!"},
                 status.HTTP_400_BAD_REQUEST)
 
         player_multiple_problems = self.get_queryset().filter(player=player).values_list('multiple_problem', flat=True)

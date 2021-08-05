@@ -28,12 +28,12 @@ class MultipleProblemDetailedSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# class PlayerMultipleProblemDetailedSerializer(serializers.ModelSerializer):
-#     multiple_problem = MultipleProblemDetailedSerializer()
-#
-#     class Meta:
-#         model = PlayerMultipleProblem
-#         fields = '__all__'
+class PlayerMultipleProblemDetailedSerializer(serializers.ModelSerializer):
+    multiple_problem = MultipleProblemDetailedSerializer()
+
+    class Meta:
+        model = PlayerMultipleProblem
+        fields = '__all__'
 
 
 class ProblemInfoSerializer(serializers.ModelSerializer):
