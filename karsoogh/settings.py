@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'karsoogh.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Interkarsolar',
+        'NAME': 'Interkarsolar2',
         'USER': 'Admin',
         'PASSWORD': '147456admin',
         'HOST': '127.0.0.1',
