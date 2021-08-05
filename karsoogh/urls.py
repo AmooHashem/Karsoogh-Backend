@@ -9,4 +9,4 @@ urlpatterns = \
         path('admin/', admin.site.urls),
         path('api/account/', include('Account.urls')),
         path('api/game/', include('Game.urls')),
-    ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    ] + static(settings.settings_base.STATIC_URL, document_root=settings.settings_base.STATIC_ROOT)
