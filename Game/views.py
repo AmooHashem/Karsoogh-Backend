@@ -7,7 +7,18 @@ from rest_framework.response import Response
 from Game.models import Subject, PlayerSingleProblem, PlayerMultipleProblem, Player, Problem, MultipleProblem, Game, \
     Transaction
 from Game.serializers import SingleProblemSerializer, SubjectSerializer, MultipleProblemSerializer, \
-    ProblemDetailedSerializer, PlayerSingleProblemDetailedSerializer
+    ProblemDetailedSerializer, PlayerSingleProblemDetailedSerializer, PlayerSerializer
+
+
+class PlayerView(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = PlayerSerializer
+
+    def get(self, request, game_id):
+        user = request.user
+        player = Player.objects.get(user=user, game__id=game_id)
+        player_serializer = self.get_serializer(player)
+        return Response(player_serializer.data, status.HTTP_200_OK)
 
 
 class SubjectView(generics.GenericAPIView):
@@ -26,11 +37,11 @@ class PlayerSingleProblemView(generics.GenericAPIView):
     serializer_class = PlayerSingleProblemDetailedSerializer
     queryset = PlayerSingleProblem.objects.all()
 
-    def get(self, request, game_id, single_problem_id):
+    def get(self, request, game_id, problem_id):
         user = request.user
         player = Player.objects.get(game__id=game_id, user=user)
         player_single_problem_query_set = self.get_queryset() \
-            .filter(player=player, problem__id=single_problem_id)
+            .filter(player=player, id=problem_id)
         if player_single_problem_query_set.count() == 0:
             return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
         player_single_problem = player_single_problem_query_set.first()
@@ -43,17 +54,17 @@ class PlayerMultipleProblemView(generics.GenericAPIView):
     serializer_class = ProblemDetailedSerializer
     queryset = PlayerMultipleProblem.objects.all()
 
-    def get(self, request, game_id, multiple_problem_id):
+    def get(self, request, game_id, problem_id):
         user = request.user
         player = Player.objects.get(game__id=game_id, user=user)
         player_multiple_problem_query_set = self.get_queryset() \
-            .filter(player=player, multiple_problem_id=multiple_problem_id)
+            .filter(player=player, id=problem_id)
         if player_multiple_problem_query_set.count() == 0:
             return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
         player_multiple_problem = player_multiple_problem_query_set.first()
-        single_problem = player_multiple_problem.multiple_problem.problems.all()[player_multiple_problem.step]
-        single_problem_serializer = self.get_serializer(single_problem)
-        return Response(single_problem_serializer.data, status.HTTP_200_OK)
+        multiple_problem = player_multiple_problem.multiple_problem.problems.all()[player_multiple_problem.step]
+        multiple_problem_serializer = self.get_serializer(multiple_problem)
+        return Response(multiple_problem_serializer.data, status.HTTP_200_OK)
 
     def post(self, request, game_id, multiple_problem_id):
         answer = request.data.answer
