@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.safestring import mark_safe
-from jsonfield import JSONField
 
 from Account.models import User
 
