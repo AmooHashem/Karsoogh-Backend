@@ -47,13 +47,14 @@ class Problem(models.Model):
     relative_order = models.IntegerField(default=0, verbose_name='ترتیب نسبی')
 
     def __str__(self):
-        return f'{self.title}'
+        return f'{self.title} ({"کوتاه پاسخ" if self.type == "SHORT_ANSWER" else "تشریحی"}، ' \
+               f'{"آسان" if self.difficulty == "EASY" else ("متوسط" if self.difficulty == "MEDIUM" else "سخت")})'
 
 
 class MultipleProblem(models.Model):
     title = models.CharField(max_length=50, verbose_name='عنوان', blank=True)
     problems = models.ManyToManyField(Problem, verbose_name='مسئله‌ها')
-    maximum_hint_count = models.IntegerField(default=0, verbose_name='حداکثر تعداد راهنمایی')
+    maximum_hint_count = models.IntegerField(default=3, verbose_name='حداکثر تعداد راهنمایی')
     cost = models.IntegerField(default=0, verbose_name='هزینه‌ی دریافت')
     reward = models.IntegerField(default=0, verbose_name='پاداش حل‌کردن')
 
