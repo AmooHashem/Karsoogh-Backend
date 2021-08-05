@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.safestring import mark_safe
 
 from Account.models import User
 
@@ -8,6 +7,9 @@ class Game(models.Model):
     title = models.CharField(max_length=255, verbose_name='عنوان')
     start_date = models.DateTimeField(verbose_name='تاریخ شروع')
     finish_date = models.DateTimeField(verbose_name='تاریخ پایان')
+    maximum_number_of_received_problem = \
+        models.IntegerField(default=2,
+                            verbose_name='حداکثر تعداد سوالاتی که بازیکن در یک لحظه می‌تواند داشته باشد')
 
     def __str__(self):
         return self.title
@@ -21,6 +23,7 @@ class Subject(models.Model):
         return f'{self.title}'
 
 
+# todo: make "BaseProblem" model
 class Problem(models.Model):
     class Difficulty(models.TextChoices):
         EASY = 'EASY'
@@ -32,12 +35,13 @@ class Problem(models.Model):
         DESCRIPTIVE = 'DESCRIPTIVE'
 
     title = models.CharField(max_length=100, verbose_name='عنوان')
-    score = models.IntegerField(verbose_name='امتیاز', default=0)
     type = models.CharField(max_length=20, choices=Type.choices, default=Type.DESCRIPTIVE, verbose_name='نوع')
     games = models.ManyToManyField(Game, verbose_name='بازی‌(ها)')
     subject = models.ForeignKey(to=Subject, on_delete=models.PROTECT, blank=True, null=True)
     difficulty = models.CharField(max_length=20, choices=Difficulty.choices, verbose_name='درجه سختی',
                                   default=Difficulty.MEDIUM)
+    cost = models.IntegerField(default=0, verbose_name='هزینه‌ی دریافت')
+    reward = models.IntegerField(default=0, verbose_name='پاداش حل‌کردن')
     text = models.TextField(verbose_name='متن')
     answer = models.TextField(null=True, blank=True, verbose_name='پاسخ (اختیاری)')
 
@@ -48,8 +52,9 @@ class Problem(models.Model):
 class MultipleProblem(models.Model):
     title = models.CharField(max_length=50, verbose_name='عنوان', blank=True)
     problems = models.ManyToManyField(Problem, verbose_name='مسئله‌ها')
-    score = models.IntegerField(verbose_name='امتیاز', default=0)
     maximum_hint_count = models.IntegerField(default=0, verbose_name='حداکثر تعداد راهنمایی')
+    cost = models.IntegerField(default=0, verbose_name='هزینه‌ی دریافت')
+    reward = models.IntegerField(default=0, verbose_name='پاداش حل‌کردن')
 
 
 class Player(models.Model):
