@@ -7,7 +7,6 @@ from Game.models import Game, Player, PlayerProblem, Transaction, Subject, Hint,
     PlayerSingleProblem, Problem, MultipleProblem
 
 admin.site.register(MultipleProblem)
-admin.site.register(PlayerSingleProblem)
 admin.site.register(PlayerMultipleProblem)
 admin.site.register(Game)
 admin.site.register(Subject)
@@ -73,3 +72,19 @@ class TransactionAdmin(admin.ModelAdmin):
 @admin.register(Hint)
 class HintAdmin(admin.ModelAdmin):
     list_display = ('multiple_problem', 'player', 'is_answered')
+
+
+def marg_bar_amrika(a, b, c):
+    all_players = Player.objects.all()
+    for player in all_players:
+        player_single_problems = PlayerSingleProblem.objects.filter(player=player)
+        for player_single_problem in player_single_problems:
+            player.score += player_single_problem.mark
+        player.save()
+
+
+@admin.register(PlayerSingleProblem)
+class PlayerSingleProblemAdmin(admin.ModelAdmin):
+    list_display = ('player', 'problem', 'status', 'mark')
+    marg_bar_amrika.short_description = 'مرگ بر آمریکا'
+    actions = [marg_bar_amrika]

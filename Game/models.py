@@ -91,6 +91,9 @@ class PlayerMultipleProblem(PlayerProblem):
     multiple_problem = models.ForeignKey(MultipleProblem, on_delete=models.PROTECT, blank=True)
     step = models.IntegerField(default=0, verbose_name='تعداد سوالات حل‌شده تا اینجا')
 
+    def __str__(self):
+        return f'{self.player} | {self.multiple_problem.title}'
+
 
 # todo: remove multiple_problem and replace player_multiple_problem
 class Hint(models.Model):
