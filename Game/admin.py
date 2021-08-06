@@ -35,18 +35,22 @@ def import_from_csv(a, b, c):
                 game = boys_game
             else:
                 game = girls_game
-            user, _ = User.objects.get_or_create(
-                password=make_password(row[2]),
-                username=row[2],
-                first_name=row[3],
-                last_name=row[4],
-                phone_number=row[7],
-                backup_phone_number=row[8]
-            )
-            Player.objects.get_or_create(
-                score=row[0],
-                user=user,
-                game=game)
+
+            initial_user = User.objects.filter(username=row[2]).first()
+            if initial_user is None:
+                user = User(
+                    password=make_password(row[2]),
+                    username=row[2],
+                    first_name=row[3],
+                    last_name=row[4],
+                    phone_number=row[7],
+                    backup_phone_number=row[8]
+                )
+                user.save()
+                Player.objects.get_or_create(
+                    score=row[0],
+                    user=user,
+                    game=game)
 
 
 @admin.register(Player)
