@@ -136,7 +136,8 @@ class PlayerMultipleProblemView(generics.GenericAPIView):
                 player_multiple_problem.status = 'SCORED'
                 player_multiple_problem.mark = player_multiple_problem.multiple_problem.reward
                 player_multiple_problem.save()
-                make_transaction(player, f"حل‌کردن مسئله‌ی دنباله‌دار {player_multiple_problem.multiple_problem.title}",
+                make_transaction(player,
+                                 f"حل‌کردن مسئله‌ی دنباله‌دار «{player_multiple_problem.multiple_problem.title}»",
                                  player_multiple_problem.multiple_problem.reward)
                 return Response({"message": "شما این مسئله‌ی دنباله‌دار را با موفقیت حل کردید!"}, status.HTTP_200_OK)
             else:
@@ -257,7 +258,7 @@ class PlayerSingleProblemCorrectionView(generics.GenericAPIView):
         player_single_problem.mark = int(mark) * int(player_single_problem.problem.reward) // 10
         player_single_problem.status = 'SCORED'
         player_single_problem.save()
-        make_transaction(player_single_problem.player, f"حل‌کردن مسئله‌ی تکی {player_single_problem.problem.title}",
+        make_transaction(player_single_problem.player, f"حل‌کردن مسئله‌ی تکی «{player_single_problem.problem.title}»",
                          player_single_problem.mark)
         return Response({"message": "نمره‌ی این مسئله با موفقیت ثبت شد!"})
 

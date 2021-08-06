@@ -77,7 +77,7 @@ class PlayerProblem(models.Model):
         SCORED = 'SCORED'
 
     player = models.ForeignKey(Player, on_delete=models.PROTECT, verbose_name='بازیکن')
-    status = models.CharField(max_length=10, choices=Status.choices, default=Status.RECEIVED)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.RECEIVED, verbose_name='وضعیت')
     mark = models.IntegerField(default=-1, verbose_name='نمره')
 
 

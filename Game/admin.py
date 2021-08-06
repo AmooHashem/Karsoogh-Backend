@@ -64,9 +64,19 @@ class ProblemAdmin(admin.ModelAdmin):
     list_display = ('title', 'type', 'difficulty', 'cost', 'reward', 'answer')
 
 
+def girls_scores(a, b, c):
+    all_transaction = Transaction.objects.all()
+    for transaction in all_transaction:
+        if transaction.title == 'ماین' or transaction.title == 'بانک' or transaction.title == 'بازی':
+            transaction.player.score += transaction.amount
+            transaction.player.save()
+
+
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ('title', 'player', 'amount')
+    actions = [girls_scores]
+    girls_scores.short_description = 'هندل‌کردن امتیاز دخترها'
 
 
 @admin.register(Hint)
@@ -74,17 +84,6 @@ class HintAdmin(admin.ModelAdmin):
     list_display = ('multiple_problem', 'player', 'is_answered')
 
 
-def marg_bar_amrika(a, b, c):
-    all_players = Player.objects.all()
-    for player in all_players:
-        player_single_problems = PlayerSingleProblem.objects.filter(player=player)
-        for player_single_problem in player_single_problems:
-            player.score += player_single_problem.mark
-        player.save()
-
-
 @admin.register(PlayerSingleProblem)
 class PlayerSingleProblemAdmin(admin.ModelAdmin):
     list_display = ('player', 'problem', 'status', 'mark')
-    marg_bar_amrika.short_description = 'مرگ بر آمریکا'
-    actions = [marg_bar_amrika]
