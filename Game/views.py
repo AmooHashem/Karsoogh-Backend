@@ -8,7 +8,7 @@ from Game.models import Subject, PlayerSingleProblem, PlayerMultipleProblem, Pla
     Transaction, Hint
 from Game.serializers import SingleProblemSerializer, SubjectSerializer, MultipleProblemSerializer, \
     ProblemDetailedSerializer, PlayerSingleProblemDetailedSerializer, PlayerSerializer, HintSerializer, \
-    PlayerSingleProblemCorrectionSerializer
+    PlayerSingleProblemCorrectionSerializer, HintAnsweringSerializer
 
 
 class HintView(generics.GenericAPIView):
@@ -258,6 +258,34 @@ class PlayerSingleProblemCorrectionView(generics.GenericAPIView):
         player_single_problem.status = 'SCORED'
         player_single_problem.save()
         return Response({"message": "نمره‌ی مسئله این با موفقیت ثبت شد!"})
+
+
+class HintAnswering(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = HintAnsweringSerializer
+    queryset = Hint.objects.all()
+
+    def get(self, request):
+        hints = self.get_queryset().filter(is_answered=False)
+        if hints.count() == 0:
+            return Response({"message": "همه‌ی راهنمایی‌ها پاسخ داده‌شده‌اند!"}, status.HTTP_200_OK)
+        selected_hint = get_random(hints)
+        player_questioned_problem = PlayerMultipleProblem.objects.get(
+            multiple_problem=selected_hint.multiple_problem, player=selected_hint.player)
+
+        hint_serializer = self.get_serializer(selected_hint)
+        questioned_problem = selected_hint.multiple_problem.problems.all()[player_questioned_problem.step]
+        problem_serializer = ProblemDetailedSerializer(questioned_problem)
+        return Response({'hint': hint_serializer.data, "questioned_problem": problem_serializer.data},
+                        status.HTTP_200_OK)
+
+    def post(self, request):
+        hint_id, answer = request.data['hint_id'], request.data['answer']
+        hint = self.get_queryset().get(id=hint_id)
+        hint.answer = answer
+        hint.is_answered = True
+        hint.save()
+        return Response({"message": "پاسخ راهنمایی با موفقیت ثبت ‌شد!"})
 
 
 def get_random(query_set):

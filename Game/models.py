@@ -92,12 +92,12 @@ class PlayerMultipleProblem(PlayerProblem):
     step = models.IntegerField(default=0, verbose_name='تعداد سوالات حل‌شده تا اینجا')
 
 
+# todo: remove multiple_problem and replace player_multiple_problem
 class Hint(models.Model):
-    multiple_problem = models.ForeignKey(MultipleProblem, on_delete=models.PROTECT, verbose_name='مسئله چندتایی',
-                                         blank=True, null=True)
-    player = models.ForeignKey(Player, on_delete=models.PROTECT, verbose_name='بازیکن', blank=True, null=True)
-    question = models.TextField(verbose_name='سوال', blank=True, null=True)
-    answer = models.TextField(verbose_name='جواب', blank=True, null=True)
+    multiple_problem = models.ForeignKey(MultipleProblem, on_delete=models.PROTECT, verbose_name='مسئله چندتایی')
+    player = models.ForeignKey(Player, on_delete=models.PROTECT, verbose_name='بازیکن')
+    question = models.TextField(verbose_name='ابهام')
+    answer = models.TextField(verbose_name='پاسخ به ابهام', blank=True, null=True)
     is_answered = models.BooleanField(default=False, verbose_name='آیا رسیدگی شده؟')
 
 

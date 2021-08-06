@@ -14,5 +14,5 @@ urlpatterns = [
     path('<int:game_id>/hint/<int:problem_id>/',
          HintView.as_view(), name='hint of problem'),
     path('mentor/problem/', PlayerSingleProblemCorrectionView.as_view(), name='problem correction'),
-    path('mentor/hint/', PlayerSingleProblemCorrectionView.as_view(), name='answer hint'),
+    path('mentor/hint/', HintAnswering.as_view(), name='answer hint'),
 ]

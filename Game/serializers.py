@@ -97,3 +97,9 @@ class PlayerSingleProblemCorrectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlayerSingleProblem
         fields = ['text_answer', 'problem', 'id']
+
+
+class HintAnsweringSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hint
+        fields = ['question', 'id']
