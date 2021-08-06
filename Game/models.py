@@ -92,8 +92,11 @@ class PlayerMultipleProblem(PlayerProblem):
 
 
 class Hint(models.Model):
-    consecutive_problems = models.ForeignKey(PlayerMultipleProblem, on_delete=models.PROTECT, verbose_name='سری مسئله')
-    text = models.TextField(default='درخواست راهنمایی شما ثبت شد! به زودی منتظر راهنمایی خ')
+    problem = models.ForeignKey(Problem, on_delete=models.PROTECT, verbose_name='مسئله')
+    player = models.ForeignKey(Player, on_delete=models.PROTECT, verbose_name='بازیکن')
+    question = models.TextField(verbose_name='سوال')
+    answer = models.TextField(verbose_name='جواب', blank=True, null=True)
+    is_answered = models.BooleanField(default=False, verbose_name='آیا رسیدگی شده؟')
 
 
 class Transaction(models.Model):

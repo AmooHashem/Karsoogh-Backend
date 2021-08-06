@@ -2,6 +2,12 @@ from rest_framework import serializers
 from .models import *
 
 
+class HintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hint
+        fields = ['question', 'answer']
+
+
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject

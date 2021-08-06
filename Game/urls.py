@@ -11,4 +11,7 @@ urlpatterns = [
     path('<int:game_id>/problem/multiple/', MultipleProblemView.as_view(), name='one problem'),
     path('<int:game_id>/problem/multiple/<int:problem_id>/',
          PlayerMultipleProblemView.as_view(), name='one problem'),
+    path('<int:game_id>/hint/<int:problem_id>/',
+         HintView.as_view(), name='hint of problem'),
+
 ]
