@@ -51,6 +51,7 @@ class Problem(models.Model):
                f'{"آسان" if self.difficulty == "EASY" else ("متوسط" if self.difficulty == "MEDIUM" else "سخت")})'
 
 
+# add game field
 class MultipleProblem(models.Model):
     title = models.CharField(max_length=50, verbose_name='عنوان', blank=True)
     problems = models.ManyToManyField(Problem, verbose_name='مسئله‌ها')

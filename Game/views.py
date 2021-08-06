@@ -180,7 +180,7 @@ class SingleProblemView(generics.GenericAPIView):
                 status.HTTP_400_BAD_REQUEST)
 
         player_single_problems = self.get_queryset().filter(player=player).values_list('problem', flat=True)
-        available_problems = Problem.objects.filter(difficulty=difficulty, type='DESCRIPTIVE') \
+        available_problems = Problem.objects.filter(game__id=game_id, difficulty=difficulty, type='DESCRIPTIVE') \
             .exclude(id__in=player_single_problems.all())
         if available_problems.count() == 0:
             return Response({"message": "شما تمام سوالات این بخش را گرفته‌اید!"}, status.HTTP_404_NOT_FOUND)
