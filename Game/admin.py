@@ -44,6 +44,7 @@ def import_from_csv(a, b, c):
                 backup_phone_number=row[8]
             )
             Player.objects.get_or_create(
+                score=row[0],
                 user=user,
                 game=game)
 
@@ -67,4 +68,4 @@ class TransactionAdmin(admin.ModelAdmin):
 
 @admin.register(Hint)
 class HintAdmin(admin.ModelAdmin):
-    list_display = ('problem', 'player', 'is_answered')
+    list_display = ('multiple_problem', 'player', 'is_answered')

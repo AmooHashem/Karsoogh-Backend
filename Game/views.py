@@ -18,8 +18,7 @@ class HintView(generics.GenericAPIView):
     def get(self, request, game_id, problem_id):
         user = request.user
         player = Player.objects.get(user=user, game__id=game_id)
-        print(game_id, problem_id)
-        hints = Hint.objects.filter(problem__id=problem_id, player=player)
+        hints = Hint.objects.filter(multiple_problem__id=problem_id, player=player)
         hints_serializer = HintSerializer(data=hints, many=True)
         hints_serializer.is_valid()
         return Response(hints_serializer.data, status.HTTP_200_OK)
@@ -28,9 +27,12 @@ class HintView(generics.GenericAPIView):
         user = request.user
         question = request.data['question']
         player = Player.objects.get(user=user, game__id=game_id)
-        problem = Problem.objects.get(id=problem_id)
-        new_hint = Hint(question=question, problem=problem, player=player)
+        multiple_problem = MultipleProblem.objects.get(id=problem_id)
+        new_hint = Hint(question=question, multiple_problem=multiple_problem, player=player)
         new_hint.save()
+
+        make_transaction(player, f"درخواست راهنمایی برای مسئله‌ی «{multiple_problem.title}»", -50)
+
         return Response({"message": "راهنمایی شما با موفقیت ثبت شد! منتظر پاسخگویی مسئولین باشید :)"},
                         status.HTTP_200_OK)
 
@@ -79,7 +81,7 @@ class PlayerSingleProblemView(generics.GenericAPIView):
         user = request.user
         player = Player.objects.get(game__id=game_id, user=user)
         player_single_problem = self.get_queryset() \
-            .filter(player=player, id=problem_id, status='RECEIVED').first()
+            .filter(player=player, problem__id=problem_id, status='RECEIVED').first()
         if player_single_problem is None:
             return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
 

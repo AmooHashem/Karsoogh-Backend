@@ -47,7 +47,7 @@ class ProblemInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Problem
-        fields = ['id', 'title', 'subject', 'difficulty', ]
+        fields = ['id', 'title', 'cost', 'reward', 'subject', 'difficulty', ]
 
 
 class MultipleProblemInfoSerializer(serializers.ModelSerializer):
@@ -55,7 +55,7 @@ class MultipleProblemInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MultipleProblem
-        fields = ['id', 'title', 'problems_count']
+        fields = ['id', 'cost', 'reward', 'title', 'problems_count']
 
     def get_problems_count(self, obj):
         return obj.problems.count()
