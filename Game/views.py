@@ -18,6 +18,7 @@ class HintView(generics.GenericAPIView):
     def get(self, request, game_id, problem_id):
         user = request.user
         player = Player.objects.get(user=user, game__id=game_id)
+        print(game_id, problem_id)
         hints = Hint.objects.filter(problem__id=problem_id, player=player)
         hints_serializer = HintSerializer(data=hints, many=True)
         hints_serializer.is_valid()
@@ -107,7 +108,7 @@ class PlayerMultipleProblemView(generics.GenericAPIView):
             .order_by('relative_order').all()
 
         if player_multiple_problem.step == multiple_problem_query_set.count():
-            return Response({"is_end": "true"}, status.HTTP_200_OK)
+            return Response({"status": player_multiple_problem.status}, status.HTTP_200_OK)
 
         multiple_problem = multiple_problem_query_set[player_multiple_problem.step]
         multiple_problem_serializer = self.get_serializer(multiple_problem)

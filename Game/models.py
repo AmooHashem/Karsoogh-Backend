@@ -92,9 +92,9 @@ class PlayerMultipleProblem(PlayerProblem):
 
 
 class Hint(models.Model):
-    problem = models.ForeignKey(Problem, on_delete=models.PROTECT, verbose_name='مسئله')
-    player = models.ForeignKey(Player, on_delete=models.PROTECT, verbose_name='بازیکن')
-    question = models.TextField(verbose_name='سوال')
+    problem = models.ForeignKey(Problem, on_delete=models.PROTECT, verbose_name='مسئله', blank=True, null=True)
+    player = models.ForeignKey(Player, on_delete=models.PROTECT, verbose_name='بازیکن', blank=True, null=True)
+    question = models.TextField(verbose_name='سوال', blank=True, null=True)
     answer = models.TextField(verbose_name='جواب', blank=True, null=True)
     is_answered = models.BooleanField(default=False, verbose_name='آیا رسیدگی شده؟')
 

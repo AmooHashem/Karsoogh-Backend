@@ -9,8 +9,6 @@ from Game.models import Game, Player, PlayerProblem, Transaction, Subject, Hint,
 admin.site.register(MultipleProblem)
 admin.site.register(PlayerSingleProblem)
 admin.site.register(PlayerMultipleProblem)
-admin.site.register(Transaction)
-admin.site.register(Hint)
 admin.site.register(Game)
 admin.site.register(Subject)
 
@@ -59,4 +57,14 @@ class PlayerAdmin(admin.ModelAdmin):
 
 @admin.register(Problem)
 class ProblemAdmin(admin.ModelAdmin):
-    list_display = ('title', 'type', 'difficulty', 'cost', 'reward', 'id')
+    list_display = ('title', 'type', 'difficulty', 'cost', 'reward', 'answer')
+
+
+@admin.register(Transaction)
+class TransactionAdmin(admin.ModelAdmin):
+    list_display = ('title', 'player', 'amount')
+
+
+@admin.register(Hint)
+class HintAdmin(admin.ModelAdmin):
+    list_display = ('problem', 'player', 'is_answered')
