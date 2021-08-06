@@ -89,3 +89,11 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = ['user', 'score']
+
+
+class PlayerSingleProblemCorrectionSerializer(serializers.ModelSerializer):
+    problem = ProblemDetailedSerializer()
+
+    class Meta:
+        model = PlayerSingleProblem
+        fields = ['text_answer', 'problem', 'id']

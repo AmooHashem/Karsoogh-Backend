@@ -7,7 +7,8 @@ from rest_framework.response import Response
 from Game.models import Subject, PlayerSingleProblem, PlayerMultipleProblem, Player, Problem, MultipleProblem, Game, \
     Transaction, Hint
 from Game.serializers import SingleProblemSerializer, SubjectSerializer, MultipleProblemSerializer, \
-    ProblemDetailedSerializer, PlayerSingleProblemDetailedSerializer, PlayerSerializer, HintSerializer
+    ProblemDetailedSerializer, PlayerSingleProblemDetailedSerializer, PlayerSerializer, HintSerializer, \
+    PlayerSingleProblemCorrectionSerializer
 
 
 class HintView(generics.GenericAPIView):
@@ -235,6 +236,28 @@ class MultipleProblemView(generics.GenericAPIView):
         new_player_multiple_problem.save()
         make_transaction(player, f'دریافت مسئله‌ی {selected_problem.title}', -selected_problem.cost)
         return Response({"message": "سوال دنباله‌دار با موفقیت اضافه شد!"}, status.HTTP_200_OK)
+
+
+class PlayerSingleProblemCorrectionView(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = PlayerSingleProblemCorrectionSerializer
+    queryset = PlayerSingleProblem.objects.all()
+
+    def get(self, request):
+        answers = self.get_queryset().filter(status='DELIVERED')
+        if answers.count() == 0:
+            return Response({"message": "سوال تصحبح‌نشده‌ای باقی نمانده"}, status.HTTP_200_OK)
+        selected_answer = get_random(answers)
+        serializer = self.get_serializer(selected_answer)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+    def post(self, request):
+        player_single_problem_id, mark = request.data['player_single_problem_id'], request.data['mark']
+        player_single_problem = self.get_queryset().get(id=player_single_problem_id)
+        player_single_problem.mark = int(mark) * int(player_single_problem.problem.reward) // 10
+        player_single_problem.status = 'SCORED'
+        player_single_problem.save()
+        return Response({"message": "نمره‌ی مسئله این با موفقیت ثبت شد!"})
 
 
 def get_random(query_set):
