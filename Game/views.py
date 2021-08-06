@@ -66,11 +66,11 @@ class PlayerSingleProblemView(generics.GenericAPIView):
     def get(self, request, game_id, problem_id):
         user = request.user
         player = Player.objects.get(game__id=game_id, user=user)
-        player_single_problem_query_set = self.get_queryset() \
-            .filter(player=player, id=problem_id)
-        if player_single_problem_query_set.count() == 0:
+        player_single_problem = self.get_queryset() \
+            .filter(player=player, problem__id=problem_id).first()
+        if player_single_problem is None:
             return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
-        player_single_problem = player_single_problem_query_set.first()
+
         player_single_problem_serializer = self.get_serializer(player_single_problem)
         return Response(player_single_problem_serializer.data, status.HTTP_200_OK)
 
@@ -100,7 +100,7 @@ class PlayerMultipleProblemView(generics.GenericAPIView):
         user = request.user
         player = Player.objects.get(game__id=game_id, user=user)
         player_multiple_problem = self.get_queryset() \
-            .filter(player=player, id=problem_id).first()
+            .filter(player=player, multiple_problem__id=problem_id).first()
         if player_multiple_problem is None:
             return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
 
@@ -119,7 +119,7 @@ class PlayerMultipleProblemView(generics.GenericAPIView):
         user = request.user
         player = Player.objects.get(game__id=game_id, user=user)
         player_multiple_problem = self.get_queryset() \
-            .filter(player=player, id=problem_id, status='RECEIVED').first()
+            .filter(player=player, multiple_problem__id=problem_id, status='RECEIVED').first()
         if player_multiple_problem is None:
             return Response({"message": "شما دسترسی ندارید!"}, status.HTTP_403_FORBIDDEN)
 
