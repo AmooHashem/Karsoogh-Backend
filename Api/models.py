@@ -175,6 +175,7 @@ class Exam(BaseFieldsModel):
     prerequisite = models.ForeignKey('Exam', on_delete=models.PROTECT, related_name='prerequisite_exam',
                                      verbose_name='آزمونِ پیش‌نیاز', null=True, blank=True)
     cost = models.IntegerField(verbose_name='هزینه‌ی ثبت‌نام (ریال)', default=0, )
+    is_public = models.BooleanField(default=False, null=True, blank=True, verbose_name='آیا رویداد عمومی است یا نه؟')
 
     def __str__(self):
         return self.title

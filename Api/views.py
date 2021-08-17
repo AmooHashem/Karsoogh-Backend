@@ -398,7 +398,17 @@ def get_student_exams(request):
     if request.method != "GET":
         return get_response(601)
     student = request.student
-    exam_students = ExamStudent.objects.filter(student=student)
+    exam_students = list(ExamStudent.objects.filter(student=student))
+    all_exams = Exam.objects.filter(is_public=True)
+    for exam in all_exams:
+        mark = False
+        for exam_student in exam_students:
+            if exam == exam_student.exam:
+                mark = True
+        if not mark:
+            new_exam_student = ExamStudent(exam=exam, student=student)
+            new_exam_student.save()
+            exam_students.append(new_exam_student)
     result = []
     for exam_student in exam_students:
         result.append({
