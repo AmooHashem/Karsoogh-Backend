@@ -383,7 +383,7 @@ def get_student_exams(request):
     for exam in all_exams:
         mark = False
         for exam_student in exam_students:
-            if exam is exam_student.exam:
+            if exam == exam_student.exam:
                 mark = True
         if not mark:
             new_exam_student = ExamStudent(exam=exam, student=student)
