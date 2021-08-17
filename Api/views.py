@@ -379,7 +379,7 @@ def get_student_exams(request):
         return get_response(601)
     student = request.student
     exam_students = list(ExamStudent.objects.filter(student=student))
-    all_exams = Exam.objects.all()
+    all_exams = Exam.objects.filter(is_public=True)
     for exam in all_exams:
         mark = False
         for exam_student in exam_students:
