@@ -379,6 +379,13 @@ def get_student_exams(request):
         return get_response(601)
     student = request.student
     exam_students = ExamStudent.objects.filter(student=student)
+    all_exams = Exam.object.all()
+    for exam in all_exams:
+        for exam_student in exam_students:
+            if exam is exam_student.exam:
+                new_exam_student = ExamStudent(exam=exam, student=student)
+                new_exam_student.save()
+                exam_students.append(new_exam_student)
     result = []
     for exam_student in exam_students:
         result.append({
