@@ -379,7 +379,7 @@ def get_student_exams(request):
         return get_response(601)
     student = request.student
     exam_students = ExamStudent.objects.filter(student=student)
-    all_exams = Exam.object.all()
+    all_exams = Exam.objects.all()
     for exam in all_exams:
         for exam_student in exam_students:
             if exam is exam_student.exam:
