@@ -378,7 +378,7 @@ def get_student_exams(request):
     if request.method != "GET":
         return get_response(601)
     student = request.student
-    exam_students = ExamStudent.objects.filter(student=student)
+    exam_students = list(ExamStudent.objects.filter(student=student))
     all_exams = Exam.objects.all()
     for exam in all_exams:
         mark = False
