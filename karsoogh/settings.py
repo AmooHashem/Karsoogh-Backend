@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'Game',
     'corsheaders',
     'rest_framework',
+    'auction.apps.AuctionConfig',
 ]
 
 REST_FRAMEWORK = {
