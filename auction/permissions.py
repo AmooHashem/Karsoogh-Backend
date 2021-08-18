@@ -18,7 +18,7 @@ class seller_answer_problem(permissions.BasePermission):
     
     def has_permission(self, request, view):
         seller = Player.objects.get(user=request.user)
-        problem = Problem.objects.get(id=self.request.data.get('problem_id'))
+        problem = Problem.objects.get(id=request.data.get('problem_id'))
         if PlayerSingleProblem.objects.filter(player=seller, problem=problem).exists() == True:
             return True
         else:

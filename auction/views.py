@@ -10,7 +10,7 @@ from .permissions import problem_sell_limit, seller_answer_problem
 # Create your views here.
 
 class CreateAuctionProblem(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated, problem_sell_limit]
+    permission_classes = [IsAuthenticated, problem_sell_limit, seller_answer_problem]
     serializer_class = AuctionSerializers
     queryset = Auction.objects.filter(done_deal=False)
 
