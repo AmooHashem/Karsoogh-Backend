@@ -192,7 +192,10 @@ MEDIA_ROOT = rel('media')
 MEDIA_URL = '/media/'
 
 # payment properties:
-API_TOKEN = 'ce1234b6-b2a9-48e4-8cd1-3ffbe60007da'
+# interkarsolar:
+# API_TOKEN = 'ce1234b6-b2a9-48e4-8cd1-3ffbe60007da'
+# formula 0:
+API_TOKEN = '96ad321d-c1f2-43e9-84fb-b15bff73d584'
 SANDBOX = '0'
 
 GRADE = (
