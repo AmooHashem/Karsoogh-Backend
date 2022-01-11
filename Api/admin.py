@@ -5,7 +5,6 @@ import csv
 
 # Register your models here.
 
-admin.site.register(Student)
 admin.site.register(Payment)
 admin.site.register(PaymentResCode)
 admin.site.register(School)
@@ -45,8 +44,10 @@ class AnswersListFilterByNationalCode(admin.SimpleListFilter):
         #     filter_list.append(
         #         (student.national_code, f'{student.first_name} {student.last_name} | {student.national_code}')
         #     )
-        return [('123456789',
-                 'با کلیک بر روی این گزینه، جواب‌های دانش‌آموز با کد ملی ۱۲۳۴۵۶۷۸۹ نمایش داده میشه (که منطقاً خالیه!) حالا شما می‌تونید توی آدرس به جای ۱۲۳۴۵۶۷۸۹، هر کد ملی‌ای رو که می‌خواید، بذارید!')]
+        return [(
+            '123456789',
+            'با کلیک بر روی این گزینه، جواب‌های دانش‌آموز با کد ملی ۱۲۳۴۵۶۷۸۹ نمایش داده میشه (که منطقاً خالیه!) حالا شما می‌تونید توی آدرس به جای ۱۲۳۴۵۶۷۸۹، هر کد ملی‌ای رو که می‌خواید، بذارید!'
+        )]
 
     def queryset(self, request, queryset):
         """
@@ -77,6 +78,7 @@ class AnswersListFilterByNationalCode(admin.SimpleListFilter):
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
+
     def download_csv(self, request, queryset):
         file = open('answer.csv', 'w')
         writer = csv.writer(file)
@@ -91,23 +93,26 @@ class AnswerAdmin(admin.ModelAdmin):
         return response
 
     list_display = ('id', 'question_content_id', 'student')
-    list_filter = (AnswersListFilterByNationalCode,)
+    list_filter = (AnswersListFilterByNationalCode, )
     download_csv.short_description = 'Export Selected as csv'
     actions = [download_csv]
 
 
 @admin.register(Exam)
 class ExamAdmin(admin.ModelAdmin):
+
     def set_exam_participants(self, request, queryset):
         for selected_exam in queryset:
             if not selected_exam.prerequisite:
                 continue
 
-            selected_exam_students = ExamStudent.objects.filter(exam=selected_exam)
+            selected_exam_students = ExamStudent.objects.filter(
+                exam=selected_exam)
             for selected_exam_student in selected_exam_students:
                 selected_exam_student.delete()
 
-            for prerequisite_exam_student in ExamStudent.objects.filter(exam=selected_exam.prerequisite):
+            for prerequisite_exam_student in ExamStudent.objects.filter(
+                    exam=selected_exam.prerequisite):
                 if prerequisite_exam_student.status == 2:
                     new_exam_student = \
                         ExamStudent(exam=selected_exam, student=prerequisite_exam_student.student, status=0)
@@ -127,7 +132,8 @@ class ExamAdmin(admin.ModelAdmin):
 
             for answer in answers:
                 student = answer.student
-                exam_student = ExamStudent.objects.get(exam=selected_exam, student=student)
+                exam_student = ExamStudent.objects.get(exam=selected_exam,
+                                                       student=student)
                 exam_student.score = exam_student.score + answer.final_score
                 exam_student.save()
 
@@ -150,9 +156,12 @@ class ExamAdmin(admin.ModelAdmin):
 
         file = open('students.csv', 'w')
         writer = csv.writer(file)
-        first_row = ['شناسه', 'کد ملی', 'نام', 'نام خانوادگی', 'شماره تلفن', 'شماره تلفن زاپاس', 'پایه', 'مدرسه',
-                     'شماره تلفن مدرسه', 'شهر', 'استان', 'نام مدیر', 'شماره تلفن مدیر', 'وضعیت', 'تعداد پاسخ ارسال‌شده',
-                     'نمره']
+        first_row = [
+            'شناسه', 'کد ملی', 'نام', 'نام خانوادگی', 'شماره تلفن',
+            'شماره تلفن زاپاس', 'پایه', 'مدرسه', 'شماره تلفن مدرسه', 'شهر',
+            'استان', 'نام مدیر', 'شماره تلفن مدیر', 'وضعیت',
+            'تعداد پاسخ ارسال‌شده', 'نمره'
+        ]
         writer.writerow(first_row)
 
         for selected_exam_student in selected_exam_students:
@@ -161,11 +170,16 @@ class ExamAdmin(admin.ModelAdmin):
             for answer in answers_of_selected_exam:
                 if answer.student == student:
                     submitted_answers_count += 1
-            row = [student.id, student.national_code, student.first_name, student.last_name, student.phone1,
-                   student.phone2, student.grade, student.school_name, student.school_phone,
-                   student.city.title if student.city else '', student.city.province.title if student.city else '',
-                   student.manager_name, student.manager_phone, STUDENT_EXAM_STATUS[selected_exam_student.status][1],
-                   submitted_answers_count, selected_exam_student.score]
+            row = [
+                student.id, student.national_code, student.first_name,
+                student.last_name, student.phone1, student.phone2,
+                student.grade, student.school_name, student.school_phone,
+                student.city.title if student.city else '',
+                student.city.province.title if student.city else '',
+                student.manager_name, student.manager_phone,
+                STUDENT_EXAM_STATUS[selected_exam_student.status][1],
+                submitted_answers_count, selected_exam_student.score
+            ]
             writer.writerow(row)
 
         file.close()
@@ -180,5 +194,66 @@ class ExamAdmin(admin.ModelAdmin):
         'جمع‌زدن نمرات و تعیین پذیرفته‌شدگان در آزمون‌های انتخاب‌شده (این فرآیند زمان‌بر است!)'
     get_student_info_csv.short_description = \
         'دریافت فایل اکسل اطلاعات دانش‌آموزان در آزمون انتخاب‌شده (فقط یک آزمون انتخاب شود!)'
-    actions = [set_exam_final_result, get_student_info_csv, set_exam_participants]
+    actions = [
+        set_exam_final_result, get_student_info_csv, set_exam_participants
+    ]
     list_display = ('id', 'title')
+
+
+@admin.register(Student)
+class UserAdmin(admin.ModelAdmin):
+
+    def get_student_info_csv(self, request, queryset):
+
+        file = open('students.csv', 'w')
+        writer = csv.writer(file)
+        first_row = [
+            'شناسه',
+            'کد ملی',
+            'جنسیت',
+            'نام',
+            'نام خانوادگی',
+            'شماره تلفن',
+            'شماره تلفن زاپاس',
+            'پایه',
+            'مدرسه',
+            'شماره تلفن مدرسه',
+            'شهر',
+            'استان',
+            'نام مدیر',
+            'شماره تلفن مدیر',
+        ]
+        writer.writerow(first_row)
+
+        for student in queryset:
+            submitted_answers_count = 0
+            row = [
+                student.id,
+                student.national_code,
+                student.gender,
+                student.first_name,
+                student.last_name,
+                student.phone1,
+                student.phone2,
+                student.grade,
+                student.school_name,
+                student.school_phone,
+                student.city.title if student.city else '',
+                student.city.province.title if student.city else '',
+                student.manager_name,
+                student.manager_phone,
+            ]
+            writer.writerow(row)
+
+        file.close()
+        f = open('students.csv', 'r')
+        response = HttpResponse(f, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=students.csv'
+        return response
+
+    get_student_info_csv.short_description = \
+        'دریافت فایل اکسل اطلاعات دانش‌آموزان'
+    actions = [
+        get_student_info_csv,
+    ]
+    list_display = ('id', )
